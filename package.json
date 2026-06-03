@@ -1,6 +1,6 @@
 {
   "name": "agent-analyzer",
-  "version": "0.1.2",
+  "version": "0.1.17",
   "description": "Local-first deterministic profiler for agentic coding logs.",
   "license": "SEE LICENSE IN LICENSE",
   "homepage": "https://github.com/Priivacy-ai/agent-log-analyzer#readme",

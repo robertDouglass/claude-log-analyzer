@@ -1,22 +1,24 @@
 package analyzer
 
 type Report struct {
-	JobID           string             `json:"job_id"`
-	Version         string             `json:"version"`
-	Score           int                `json:"score"`
-	EstimatedWaste  WasteRange         `json:"estimated_waste_pct"`
-	Metrics         Metrics            `json:"metrics"`
-	Findings        []Finding          `json:"findings"`
-	Ecosystem       Ecosystem          `json:"ecosystem"`
-	Redactions      map[string]int     `json:"redactions"`
-	SecurityReceipt SecurityReceipt    `json:"security_receipt"`
-	Timeline        []TimelinePoint    `json:"timeline"`
-	AnalysisSignals AnalysisSignals    `json:"analysis_signals"`
-	PluginSavings   SavingsEstimate    `json:"plugin_savings"`
-	ImmediateFixes  []string           `json:"immediate_fixes"`
-	SourceReports   []SourceReport     `json:"source_reports,omitempty"`
-	AggregateEvent  AggregateSafeEvent `json:"aggregate_event"`
-	Recommendation  *RecommendationSet `json:"recommendation,omitempty"`
+	JobID             string             `json:"job_id"`
+	Version           string             `json:"version"`
+	Score             int                `json:"score"`
+	EstimatedWaste    WasteRange         `json:"estimated_waste_pct"`
+	Metrics           Metrics            `json:"metrics"`
+	Findings          []Finding          `json:"findings"`
+	Ecosystem         Ecosystem          `json:"ecosystem"`
+	Redactions        map[string]int     `json:"redactions"`
+	SecurityReceipt   SecurityReceipt    `json:"security_receipt"`
+	Timeline          []TimelinePoint    `json:"timeline"`
+	AnalysisSignals   AnalysisSignals    `json:"analysis_signals"`
+	PluginSavings     SavingsEstimate    `json:"plugin_savings"`
+	ImmediateFixes    []string           `json:"immediate_fixes"`
+	SourceReports     []SourceReport     `json:"source_reports,omitempty"`
+	AggregateEvent    AggregateSafeEvent `json:"aggregate_event"`
+	Recommendation    *RecommendationSet `json:"recommendation,omitempty"`
+	BaselineReceipt   BaselineReceipt    `json:"baseline_receipt"`
+	SavingsValidation *SavingsValidation `json:"savings_validation,omitempty"`
 }
 
 type WasteRange struct {
@@ -186,6 +188,106 @@ type SourceReport struct {
 	AnalysisSignals AnalysisSignals  `json:"analysis_signals"`
 	PluginSavings   SavingsEstimate  `json:"plugin_savings"`
 	ImmediateFixes  []string         `json:"immediate_fixes"`
+}
+
+type BaselineReceipt struct {
+	SchemaVersion         string                    `json:"schema_version"`
+	ReportVersion         string                    `json:"report_version"`
+	Window                BaselineWindow            `json:"window"`
+	SourceMix             []SourceMixEntry          `json:"source_mix"`
+	Metrics               BaselineMetrics           `json:"metrics"`
+	RecommendationIDs     []string                  `json:"recommendation_ids"`
+	RecommendationClasses []RecommendationClass     `json:"recommendation_classes"`
+	ToolState             BoundedToolState          `json:"bounded_tool_state"`
+	ReducerReceipts       []ReducerReceipt          `json:"reducer_receipts,omitempty"`
+	ControlledBenchmark   *ControlledBenchmarkProof `json:"controlled_benchmark,omitempty"`
+}
+
+type BaselineWindow struct {
+	Start          string   `json:"start,omitempty"`
+	End            string   `json:"end,omitempty"`
+	DurationBucket string   `json:"duration_bucket"`
+	LogCount       int      `json:"log_count"`
+	SourceCount    int      `json:"source_count"`
+	SizeBuckets    []string `json:"size_buckets"`
+}
+
+type SourceMixEntry struct {
+	SourceID string `json:"source_id"`
+	LogCount int    `json:"log_count"`
+}
+
+type BaselineMetrics struct {
+	Turns                             int `json:"turns"`
+	Sessions                          int `json:"sessions"`
+	EstimatedTokens                   int `json:"estimated_tokens"`
+	UncachedPlusOutputTokens          int `json:"uncached_plus_output_tokens"`
+	ToolOutputTokens                  int `json:"tool_output_tokens"`
+	CacheCreationTokens               int `json:"cache_creation_tokens"`
+	RetryDepthMax                     int `json:"retry_depth_max"`
+	FailedCommands                    int `json:"failed_commands"`
+	Rereads                           int `json:"rereads"`
+	ContextGrowthEvents               int `json:"context_growth_events"`
+	ToolCallCount                     int `json:"tool_call_count"`
+	ToolResultCount                   int `json:"tool_result_count"`
+	ToolOutputTokensPerTurnPermille   int `json:"tool_output_tokens_per_turn_permille"`
+	UncachedPlusOutputPerTurnPermille int `json:"uncached_plus_output_per_turn_permille"`
+	CacheCreationPerTurnPermille      int `json:"cache_creation_per_turn_permille"`
+	FailedCommandsPerTurnPermille     int `json:"failed_commands_per_turn_permille"`
+	RereadsPerTurnPermille            int `json:"rereads_per_turn_permille"`
+	ContextGrowthPerTurnPermille      int `json:"context_growth_per_turn_permille"`
+}
+
+type BoundedToolState struct {
+	KnownReducerIDs              []ToolID `json:"known_reducer_ids"`
+	KnownRecommendationTargetIDs []ToolID `json:"known_recommendation_target_ids"`
+	KnownPluginIDs               []string `json:"known_plugin_ids"`
+	KnownMCPServerIDs            []string `json:"known_mcp_server_ids"`
+	KnownSkillIDs                []string `json:"known_skill_ids"`
+	UnknownMCPServerCount        int      `json:"unknown_mcp_server_count"`
+	UnknownSkillCount            int      `json:"unknown_skill_count"`
+	UnknownPluginCount           int      `json:"unknown_plugin_count"`
+	UnknownToolIDCount           int      `json:"unknown_tool_id_count"`
+}
+
+type ReducerReceipt struct {
+	ToolID         ToolID `json:"tool_id"`
+	ReceiptSource  string `json:"receipt_source"`
+	Calls          int    `json:"calls"`
+	TokensSaved    int    `json:"tokens_saved"`
+	ProcessedBytes int    `json:"processed_bytes"`
+	ReturnedBytes  int    `json:"returned_bytes"`
+	ReductionPct   int    `json:"reduction_pct"`
+}
+
+type ControlledBenchmarkProof struct {
+	RepeatedPairs    int    `json:"repeated_pairs"`
+	SamePrompt       bool   `json:"same_prompt"`
+	SameCommit       bool   `json:"same_commit"`
+	SameQualityGate  bool   `json:"same_quality_gate"`
+	BothSidesPassing bool   `json:"both_sides_passing"`
+	BenchmarkSuiteID string `json:"benchmark_suite_id,omitempty"`
+}
+
+type SavingsValidation struct {
+	SchemaVersion          string               `json:"schema_version"`
+	EvidenceTier           string               `json:"evidence_tier"`
+	Summary                string               `json:"summary"`
+	MetricDeltas           []SavingsMetricDelta `json:"metric_deltas"`
+	Warnings               []string             `json:"warnings"`
+	DirectReceiptAgreement bool                 `json:"direct_receipt_agreement"`
+	Baseline               BaselineReceipt      `json:"baseline"`
+	Current                BaselineReceipt      `json:"current"`
+}
+
+type SavingsMetricDelta struct {
+	ID               string `json:"id"`
+	Label            string `json:"label"`
+	BaselinePermille int    `json:"baseline_permille"`
+	CurrentPermille  int    `json:"current_permille"`
+	DeltaPermille    int    `json:"delta_permille"`
+	DeltaPct         int    `json:"delta_pct"`
+	Improved         bool   `json:"improved"`
 }
 
 type AnalyzedLogRef struct {

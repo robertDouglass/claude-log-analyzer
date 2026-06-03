@@ -398,6 +398,13 @@
           <p id="recommendation-empty" hidden>No high-priority recommendation detected from current signals.</p>
         </section>
 
+        <section id="savings-validation-section" class="intel-section savings-validation-section" hidden>
+          <h2>Savings validation <button type="button" class="help-tip" data-tippy-content="Follow-up mode compares a later sanitized report against a baseline receipt. Natural logs can show reducer activity and normalized metric movement; controlled A/B benchmarks are required for causal proof." aria-label="More information">?</button></h2>
+          <p id="savings-validation-summary" class="section-note"></p>
+          <div id="savings-validation-metrics" class="validation-metrics"></div>
+          <ul id="savings-validation-warnings" class="validation-warnings"></ul>
+        </section>
+
         <section class="evidence-grid">
           <div class="evidence-card environment-card">
             <h2>Environment signals <button type="button" class="help-tip" data-tippy-content="This condenses bounded ecosystem fingerprints, MCP utilization, and skill utilization into the few signals that affect token waste. Unknown/private names are counted without exposing raw names." aria-label="More information">?</button></h2>

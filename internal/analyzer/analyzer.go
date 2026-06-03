@@ -76,6 +76,7 @@ func AnalyzeForSource(jobID string, source string, input []byte) (Report, error)
 	normalizeReportCollections(&report)
 	report.AggregateEvent = aggregateEvent(report, parserType, len(input))
 	AttachRecommendation(&report)
+	AttachBaselineReceipt(&report, BaselineOptions{InputSizeBytes: len(input)})
 	return report, nil
 }
 
@@ -516,6 +517,41 @@ func normalizeReportCollections(report *Report) {
 	}
 	if report.PluginSavings.FindingEstimates == nil {
 		report.PluginSavings.FindingEstimates = []FindingSavingsEstimate{}
+	}
+	if report.BaselineReceipt.SourceMix == nil {
+		report.BaselineReceipt.SourceMix = []SourceMixEntry{}
+	}
+	if report.BaselineReceipt.Window.SizeBuckets == nil {
+		report.BaselineReceipt.Window.SizeBuckets = []string{}
+	}
+	if report.BaselineReceipt.RecommendationIDs == nil {
+		report.BaselineReceipt.RecommendationIDs = []string{}
+	}
+	if report.BaselineReceipt.RecommendationClasses == nil {
+		report.BaselineReceipt.RecommendationClasses = []RecommendationClass{}
+	}
+	if report.BaselineReceipt.ToolState.KnownReducerIDs == nil {
+		report.BaselineReceipt.ToolState.KnownReducerIDs = []ToolID{}
+	}
+	if report.BaselineReceipt.ToolState.KnownRecommendationTargetIDs == nil {
+		report.BaselineReceipt.ToolState.KnownRecommendationTargetIDs = []ToolID{}
+	}
+	if report.BaselineReceipt.ToolState.KnownPluginIDs == nil {
+		report.BaselineReceipt.ToolState.KnownPluginIDs = []string{}
+	}
+	if report.BaselineReceipt.ToolState.KnownMCPServerIDs == nil {
+		report.BaselineReceipt.ToolState.KnownMCPServerIDs = []string{}
+	}
+	if report.BaselineReceipt.ToolState.KnownSkillIDs == nil {
+		report.BaselineReceipt.ToolState.KnownSkillIDs = []string{}
+	}
+	if report.SavingsValidation != nil {
+		if report.SavingsValidation.MetricDeltas == nil {
+			report.SavingsValidation.MetricDeltas = []SavingsMetricDelta{}
+		}
+		if report.SavingsValidation.Warnings == nil {
+			report.SavingsValidation.Warnings = []string{}
+		}
 	}
 	for index := range report.SourceReports {
 		if report.SourceReports[index].Findings == nil {

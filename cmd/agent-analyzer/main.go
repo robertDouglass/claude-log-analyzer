@@ -67,6 +67,8 @@ func run(args []string) error {
 		return runOneShot(args[1:])
 	case "analyze":
 		return runAnalyze(args[1:])
+	case "prove-savings", "follow-up":
+		return runProveSavings(args[1:])
 	case "full-scan":
 		return runFullScan(args[1:])
 	case "upload":
@@ -138,12 +140,7 @@ func runAnalyze(args []string) error {
 func analyzeSingle(path, out string, printNextSteps bool, sourceID string) error {
 	progress := newProgressBar(3)
 	progress.Update(0, "reading "+shortDisplay(path))
-	candidate := logCandidate{
-		SourceID:    sourceID,
-		SourceLabel: sourceLabelForID(sourceID),
-		Display:     path,
-		Read:        candidateReadFunc(sourceID, path),
-	}
+	candidate := explicitLogCandidate(sourceID, path)
 	data, err := candidate.readBytes()
 	if err != nil {
 		progress.Fail()
@@ -164,6 +161,11 @@ func analyzeSingle(path, out string, printNextSteps bool, sourceID string) error
 		},
 	})
 	progress.Update(2, "writing sanitized report")
+	analyzer.AttachBaselineReceipt(&report, baselineOptionsFromResults(report.SourceReports, []sourceAnalysisResult{{
+		Candidate: candidate,
+		Report:    report,
+		Bytes:     len(data),
+	}}, len(data), nil))
 	if err := writeReport(out, report); err != nil {
 		progress.Fail()
 		return err
@@ -584,6 +586,7 @@ func analyzeDiscovered(candidates []logCandidate, out string, mode string, print
 		report.SecurityReceipt.RawLogTTL = "not uploaded"
 	}
 	report.SourceReports = buildSourceReports(results)
+	analyzer.AttachBaselineReceipt(&report, baselineOptionsFromResults(report.SourceReports, results, totalBytes, nil))
 	progress.Update(completedSteps, "writing sanitized report")
 	if err := writeReport(out, report); err != nil {
 		progress.Fail()
@@ -781,7 +784,7 @@ func reorderAnalyzeArgs(args []string) []string {
 	for i := 0; i < len(args); i++ {
 		arg := args[i]
 		switch {
-		case arg == "--out" || arg == "-out" || arg == "--log" || arg == "-log" || arg == "--source" || arg == "-source" || arg == "--limit" || arg == "-limit":
+		case arg == "--out" || arg == "-out" || arg == "--log" || arg == "-log" || arg == "--source" || arg == "-source" || arg == "--limit" || arg == "-limit" || arg == "--baseline" || arg == "-baseline":
 			flags = append(flags, arg)
 			if i+1 < len(args) {
 				i++
@@ -790,7 +793,8 @@ func reorderAnalyzeArgs(args []string) []string {
 		case strings.HasPrefix(arg, "--out=") || strings.HasPrefix(arg, "-out=") ||
 			strings.HasPrefix(arg, "--log=") || strings.HasPrefix(arg, "-log=") ||
 			strings.HasPrefix(arg, "--source=") || strings.HasPrefix(arg, "-source=") ||
-			strings.HasPrefix(arg, "--limit=") || strings.HasPrefix(arg, "-limit="):
+			strings.HasPrefix(arg, "--limit=") || strings.HasPrefix(arg, "-limit=") ||
+			strings.HasPrefix(arg, "--baseline=") || strings.HasPrefix(arg, "-baseline="):
 			flags = append(flags, arg)
 		case strings.HasPrefix(arg, "-"):
 			flags = append(flags, arg)
@@ -816,6 +820,251 @@ func runAnalyzePaid(out string, limit int) error {
 		return noSupportedLogsError()
 	}
 	return analyzeDiscovered(candidates, out, "paid", true)
+}
+
+func runProveSavings(args []string) error {
+	fs := flag.NewFlagSet("prove-savings", flag.ContinueOnError)
+	out := fs.String("out", "agent-analyzer-followup-report.json", "path to write sanitized follow-up report JSON")
+	baselinePath := fs.String("baseline", "", "prior sanitized Agent Analyzer report JSON")
+	logPath := fs.String("log", "", "explicit supported JSON/JSONL log path for the follow-up run")
+	sourceID := fs.String("source", "", "source ID for an explicit follow-up log path")
+	limit := fs.Int("limit", defaultAutoLogLimit, "maximum target-sized recent logs per supported source to analyze")
+	orderedArgs := reorderAnalyzeArgs(args)
+	if err := fs.Parse(orderedArgs); err != nil {
+		return err
+	}
+	if strings.TrimSpace(*baselinePath) == "" {
+		return errors.New("agent-analyzer prove-savings: --baseline is required")
+	}
+	if *limit <= 0 {
+		return errors.New("agent-analyzer prove-savings: --limit must be greater than zero")
+	}
+	if *limit > maxAutoLogLimit {
+		return fmt.Errorf("agent-analyzer prove-savings: --limit cannot exceed %d", maxAutoLogLimit)
+	}
+	positional := fs.Args()
+	if len(positional) >= 1 && *logPath != "" {
+		return errors.New("agent-analyzer prove-savings: cannot combine positional log path with --log flag")
+	}
+	if len(positional) >= 2 {
+		return fmt.Errorf("agent-analyzer prove-savings: unexpected extra argument %q", positional[1])
+	}
+	if *logPath == "" && len(positional) == 1 {
+		*logPath = positional[0]
+	}
+
+	baselineReport, err := readSanitizedReport(*baselinePath)
+	if err != nil {
+		return err
+	}
+	baseline := baselineReport.BaselineReceipt
+	if baseline.SchemaVersion == "" {
+		baseline = analyzer.BuildBaselineReceipt(baselineReport, analyzer.BaselineOptions{})
+	}
+
+	var candidates []logCandidate
+	if strings.TrimSpace(*logPath) != "" {
+		source, err := explicitOrInferredSource(*sourceID, *logPath)
+		if err != nil {
+			return err
+		}
+		candidates = []logCandidate{explicitLogCandidate(source, *logPath)}
+	} else {
+		candidates, err = recentSupportedLogsFn(*limit)
+		if err != nil {
+			return err
+		}
+	}
+	if len(candidates) == 0 {
+		return noSupportedLogsError()
+	}
+
+	progress := newProgressBar(len(candidates)*2 + 1)
+	results, completedSteps, err := analyzeCandidates(candidates, progress)
+	if err != nil {
+		progress.Fail()
+		return err
+	}
+	report, totalBytes, err := reportFromAnalysisResults(results, "follow_up")
+	if err != nil {
+		progress.Fail()
+		return err
+	}
+	receipts := localReducerReceipts(baseline.Window.End)
+	analyzer.AttachSavingsValidation(&report, baseline, baselineOptionsFromResults(report.SourceReports, results, totalBytes, receipts))
+	progress.Update(completedSteps, "writing sanitized follow-up report")
+	if err := writeReport(*out, report); err != nil {
+		progress.Fail()
+		return err
+	}
+	progress.Finish("complete")
+
+	fmt.Printf("Analyzed follow-up locally: %d supported agent log(s) across %d sources (%s)\n", len(results), sourceCount(candidates), sourceSummary(candidates))
+	fmt.Printf("Raw bytes read locally: %d\n", totalBytes)
+	fmt.Printf("Evidence tier: %s\n", report.SavingsValidation.EvidenceTier)
+	fmt.Printf("Savings validation: %s\n", report.SavingsValidation.Summary)
+	printReportWrite(*out, report)
+	return nil
+}
+
+func readSanitizedReport(path string) (analyzer.Report, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return analyzer.Report{}, err
+	}
+	var report analyzer.Report
+	if err := json.Unmarshal(data, &report); err != nil {
+		return analyzer.Report{}, fmt.Errorf("report is not valid analyzer JSON: %w", err)
+	}
+	if report.SecurityReceipt.RawTranscriptSentToLLM {
+		return analyzer.Report{}, errors.New("refusing baseline report that claims raw transcript was sent to an LLM")
+	}
+	return report, nil
+}
+
+func explicitLogCandidate(sourceID, path string) logCandidate {
+	candidate := logCandidate{
+		SourceID:    sourceID,
+		SourceLabel: sourceLabelForID(sourceID),
+		Display:     path,
+		Read:        candidateReadFunc(sourceID, path),
+	}
+	if info, err := os.Stat(path); err == nil {
+		candidate.ModTime = info.ModTime()
+		candidate.Size = info.Size()
+	}
+	return candidate
+}
+
+func baselineOptionsFromResults(sourceReports []analyzer.SourceReport, results []sourceAnalysisResult, totalBytes int, receipts []analyzer.ReducerReceipt) analyzer.BaselineOptions {
+	var start time.Time
+	var end time.Time
+	for _, result := range results {
+		mod := result.Candidate.ModTime
+		if mod.IsZero() {
+			continue
+		}
+		if start.IsZero() || mod.Before(start) {
+			start = mod
+		}
+		if end.IsZero() || mod.After(end) {
+			end = mod
+		}
+	}
+	_ = sourceReports
+	return analyzer.BaselineOptions{
+		WindowStart:     start,
+		WindowEnd:       end,
+		InputSizeBytes:  totalBytes,
+		ReducerReceipts: receipts,
+	}
+}
+
+func localReducerReceipts(baselineEnd string) []analyzer.ReducerReceipt {
+	var since time.Time
+	if baselineEnd != "" {
+		if parsed, err := time.Parse(time.RFC3339, baselineEnd); err == nil {
+			since = parsed
+		}
+	}
+	receipt := contextModeReducerReceipt(since)
+	if receipt.ToolID == "" {
+		return nil
+	}
+	return []analyzer.ReducerReceipt{receipt}
+}
+
+func contextModeReducerReceipt(since time.Time) analyzer.ReducerReceipt {
+	root := filepath.Join(claudeConfigDir(), "context-mode", "sessions")
+	matches, err := filepath.Glob(filepath.Join(root, "stats-pid-*.json"))
+	if err != nil || len(matches) == 0 {
+		return analyzer.ReducerReceipt{}
+	}
+	type stats struct {
+		UpdatedAt      int64 `json:"updated_at"`
+		TotalCalls     int   `json:"total_calls"`
+		TokensSaved    int   `json:"tokens_saved"`
+		TotalProcessed int   `json:"total_processed"`
+		BytesReturned  int   `json:"bytes_returned"`
+		ReductionPct   int   `json:"reduction_pct"`
+	}
+	var receipt analyzer.ReducerReceipt
+	receipt.ToolID = "context_mode"
+	receipt.ReceiptSource = "context_mode_session_stats"
+	for _, path := range matches {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			continue
+		}
+		var current stats
+		if err := json.Unmarshal(data, &current); err != nil {
+			continue
+		}
+		if !since.IsZero() && current.UpdatedAt > 0 {
+			updated := time.UnixMilli(current.UpdatedAt)
+			if updated.Before(since) || updated.Equal(since) {
+				continue
+			}
+		}
+		if current.TotalCalls <= 0 && current.TokensSaved <= 0 {
+			continue
+		}
+		receipt.Calls += max(0, current.TotalCalls)
+		receipt.TokensSaved += max(0, current.TokensSaved)
+		receipt.ProcessedBytes += max(0, current.TotalProcessed)
+		receipt.ReturnedBytes += max(0, current.BytesReturned)
+	}
+	if receipt.Calls == 0 && receipt.TokensSaved == 0 {
+		return analyzer.ReducerReceipt{}
+	}
+	if receipt.ProcessedBytes > 0 {
+		receipt.ReductionPct = int(float64(receipt.ProcessedBytes-receipt.ReturnedBytes) / float64(receipt.ProcessedBytes) * 100)
+		if receipt.ReductionPct < 0 {
+			receipt.ReductionPct = 0
+		}
+		if receipt.ReductionPct > 100 {
+			receipt.ReductionPct = 100
+		}
+	}
+	return receipt
+}
+
+func reportFromAnalysisResults(results []sourceAnalysisResult, mode string) (analyzer.Report, int, error) {
+	if len(results) == 0 {
+		return analyzer.Report{}, 0, errors.New("no readable supported agent logs found")
+	}
+	totalBytes := 0
+	for _, result := range results {
+		totalBytes += result.Bytes
+	}
+	reports := reportsFromResults(results)
+	if mode == "" && len(reports) == 1 {
+		report := reports[0]
+		report.SecurityReceipt.RawLogTTL = "not uploaded"
+		report.SourceReports = buildSourceReports(results)
+		analyzer.AttachBaselineReceipt(&report, baselineOptionsFromResults(report.SourceReports, results, totalBytes, nil))
+		return report, totalBytes, nil
+	}
+	parserType := "multi_source"
+	jobID := "local-multi"
+	if mode == "paid" {
+		parserType = "paid_bundle"
+		jobID = "local-paid"
+	} else if mode == "full_scan" {
+		parserType = "full_scan_bundle"
+		jobID = "local-full-scan"
+	} else if mode == "follow_up" {
+		parserType = "follow_up_bundle"
+		jobID = "local-follow-up"
+	}
+	report, err := analyzer.AggregateReportsWithParserType(jobID, reports, totalBytes, parserType)
+	if err != nil {
+		return analyzer.Report{}, 0, err
+	}
+	report.SecurityReceipt.RawLogTTL = "not uploaded"
+	report.SourceReports = buildSourceReports(results)
+	analyzer.AttachBaselineReceipt(&report, baselineOptionsFromResults(report.SourceReports, results, totalBytes, nil))
+	return report, totalBytes, nil
 }
 
 func runAnalyzeFullScan(out string, limit int) error {

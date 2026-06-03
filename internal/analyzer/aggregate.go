@@ -66,6 +66,7 @@ func AggregateReportsWithParserType(jobID string, reports []Report, inputSize in
 	normalizeReportCollections(&report)
 	report.AggregateEvent = aggregateEvent(report, parserType, inputSize)
 	AttachRecommendation(&report)
+	AttachBaselineReceipt(&report, BaselineOptions{InputSizeBytes: inputSize})
 	return report, nil
 }
 

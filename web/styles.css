@@ -2610,6 +2610,51 @@ pre {
   font-size: 0.9em;
 }
 
+.savings-validation-section {
+  border-color: rgba(20, 184, 166, 0.32);
+}
+
+.validation-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.validation-metric {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.validation-metric span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.validation-metric strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.15rem;
+}
+
+.validation-improved {
+  color: #0f766e;
+}
+
+.validation-worse {
+  color: #b45309;
+}
+
+.validation-warnings {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
 .proof-page .trust-links {
   margin-bottom: 28px;
 }

@@ -187,6 +187,7 @@ function renderReport(report) {
     renderTimeline(report.timeline || [], report.estimated_waste_pct);
   }
   renderRecommendation(report);
+  renderSavingsValidation(report);
   renderEnvironmentSignals(report);
   renderReceipt(report.security_receipt, report.redactions);
   renderPluginDownloadPreview(report);
@@ -996,6 +997,68 @@ function renderRecommendation(report) {
     emptyNote.hidden = true;
   }
 }
+
+function renderSavingsValidation(report) {
+  const section = document.querySelector("#savings-validation-section");
+  const summary = document.querySelector("#savings-validation-summary");
+  const metricsRoot = document.querySelector("#savings-validation-metrics");
+  const warningsRoot = document.querySelector("#savings-validation-warnings");
+  if (!section || !summary || !metricsRoot || !warningsRoot) return;
+  metricsRoot.replaceChildren();
+  warningsRoot.replaceChildren();
+
+  const validation = report?.savings_validation;
+  if (!validation || typeof validation !== "object") {
+    section.hidden = true;
+    return;
+  }
+
+  section.hidden = false;
+  const tier = typeof validation.evidence_tier === "string" ? validation.evidence_tier : "inconclusive";
+  const tierLabel = labelFrom(SAVINGS_TIER_LABEL, tier, "Inconclusive");
+  const text = typeof validation.summary === "string" && validation.summary.length > 0
+    ? validation.summary
+    : "Follow-up comparison used bounded report metrics only.";
+  summary.textContent = `${tierLabel}: ${text}`;
+
+  const deltas = Array.isArray(validation.metric_deltas) ? validation.metric_deltas : [];
+  for (const delta of deltas) {
+    if (!delta || typeof delta !== "object") continue;
+    const row = document.createElement("div");
+    row.className = "validation-metric";
+    const label = document.createElement("span");
+    label.textContent = typeof delta.label === "string" ? delta.label : "Metric";
+    const value = document.createElement("strong");
+    const pct = typeof delta.delta_pct === "number" ? delta.delta_pct : 0;
+    value.textContent = `${pct > 0 ? "+" : ""}${pct}%`;
+    value.className = delta.improved ? "validation-improved" : "validation-worse";
+    row.append(label, value);
+    metricsRoot.appendChild(row);
+  }
+
+  const warnings = Array.isArray(validation.warnings) ? validation.warnings : [];
+  for (const warning of warnings) {
+    if (typeof warning !== "string" || warning.length === 0) continue;
+    const item = document.createElement("li");
+    item.textContent = labelFrom(SAVINGS_WARNING_LABEL, warning, warning);
+    warningsRoot.appendChild(item);
+  }
+  warningsRoot.hidden = warningsRoot.childElementCount === 0;
+}
+
+const SAVINGS_TIER_LABEL = {
+  verified: "Verified reducer activity",
+  observed: "Observed improvement",
+  inconclusive: "Inconclusive",
+  proven: "Controlled benchmark proof",
+};
+
+const SAVINGS_WARNING_LABEL = {
+  small_log_sample: "Small log sample.",
+  source_mix_changed: "Source mix changed between baseline and follow-up.",
+  workload_volume_changed: "Workload volume changed between baseline and follow-up.",
+  missing_native_token_counters: "Native token counters were missing in one window.",
+};
 
 function buildRecommendationCard(rec, savingsBucketValue) {
   const card = document.createElement("div");

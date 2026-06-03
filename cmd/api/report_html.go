@@ -113,6 +113,9 @@ var reportHTMLTemplate = template.Must(template.New("report").Funcs(template.Fun
 	"recommendationSignals":     recommendationSignals,
 	"recommendationURL":         recommendationURL,
 	"recommendationVerdict":     recommendationVerdict,
+	"evidenceTierLabel":         evidenceTierLabel,
+	"validationDeltaPct":        validationDeltaPct,
+	"validationWarningLabel":    validationWarningLabel,
 	"receiptPanel":              receiptPanelHTML,
 	"savingsRange":              savingsRange,
 	"sourceLogLabel":            sourceLogLabel,
@@ -257,6 +260,25 @@ var reportHTMLTemplate = template.Must(template.New("report").Funcs(template.Fun
           {{with .Report.Recommendation.Secondary}}{{template "recommendation" .}}{{end}}
           {{if and (not .Report.Recommendation.Primary) (not .Report.Recommendation.Secondary)}}
           <p id="recommendation-empty">No high-priority recommendation detected from current signals.</p>
+          {{end}}
+        </section>
+        {{end}}
+        {{with .Report.SavingsValidation}}
+        <section id="savings-validation-section" class="intel-section savings-validation-section">
+          <h2>Savings validation {{helpTip "Follow-up mode compares a later sanitized report against a baseline receipt. Natural logs can show reducer activity and normalized metric movement; controlled A/B benchmarks are required for causal proof."}}</h2>
+          <p class="section-note">{{evidenceTierLabel .EvidenceTier}}: {{.Summary}}</p>
+          <div class="validation-metrics">
+            {{range .MetricDeltas}}
+            <div class="validation-metric">
+              <span>{{.Label}}</span>
+              <strong class="{{if .Improved}}validation-improved{{else}}validation-worse{{end}}">{{validationDeltaPct .}}</strong>
+            </div>
+            {{end}}
+          </div>
+          {{if .Warnings}}
+          <ul class="validation-warnings">
+            {{range .Warnings}}<li>{{validationWarningLabel .}}</li>{{end}}
+          </ul>
           {{end}}
         </section>
         {{end}}
@@ -515,6 +537,42 @@ func recommendationSignals(rec analyzer.TokenSavingRecommendation) string {
 		signals = append(signals, string(signal))
 	}
 	return joinStrings(signals)
+}
+
+func evidenceTierLabel(tier string) string {
+	switch tier {
+	case "verified":
+		return "Verified reducer activity"
+	case "observed":
+		return "Observed improvement"
+	case "proven":
+		return "Controlled benchmark proof"
+	default:
+		return "Inconclusive"
+	}
+}
+
+func validationDeltaPct(delta analyzer.SavingsMetricDelta) string {
+	prefix := ""
+	if delta.DeltaPct > 0 {
+		prefix = "+"
+	}
+	return fmt.Sprintf("%s%d%%", prefix, delta.DeltaPct)
+}
+
+func validationWarningLabel(warning string) string {
+	switch warning {
+	case "small_log_sample":
+		return "Small log sample."
+	case "source_mix_changed":
+		return "Source mix changed between baseline and follow-up."
+	case "workload_volume_changed":
+		return "Workload volume changed between baseline and follow-up."
+	case "missing_native_token_counters":
+		return "Native token counters were missing in one window."
+	default:
+		return warning
+	}
 }
 
 func findingEvidence(e analyzer.FindingEvidence) string {

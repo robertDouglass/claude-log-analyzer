@@ -332,5 +332,68 @@
       "tool_output_bloat"
     ],
     "unknown_id_count": 0
+  },
+  "baseline_receipt": {
+    "schema_version": "baseline_receipt.v1",
+    "report_version": "0.1.0",
+    "window": {
+      "duration_bucket": "unknown",
+      "log_count": 1,
+      "source_count": 1,
+      "size_buckets": [
+        "\u003c10 KB"
+      ]
+    },
+    "source_mix": [
+      {
+        "source_id": "claude_code",
+        "log_count": 1
+      }
+    ],
+    "metrics": {
+      "turns": 11,
+      "sessions": 1,
+      "estimated_tokens": 143,
+      "uncached_plus_output_tokens": 0,
+      "tool_output_tokens": 91,
+      "cache_creation_tokens": 0,
+      "retry_depth_max": 3,
+      "failed_commands": 3,
+      "rereads": 3,
+      "context_growth_events": 0,
+      "tool_call_count": 0,
+      "tool_result_count": 0,
+      "tool_output_tokens_per_turn_permille": 8272,
+      "uncached_plus_output_per_turn_permille": 0,
+      "cache_creation_per_turn_permille": 0,
+      "failed_commands_per_turn_permille": 272,
+      "rereads_per_turn_permille": 272,
+      "context_growth_per_turn_permille": 0
+    },
+    "recommendation_ids": [
+      "rec.retrieval.semble.repeated_file_reads",
+      "rec.shell_output_reducer.rtk.tool_output_bloat"
+    ],
+    "recommendation_classes": [
+      "retrieval",
+      "shell_output_reducer"
+    ],
+    "bounded_tool_state": {
+      "known_reducer_ids": [
+        "rtk",
+        "semble"
+      ],
+      "known_recommendation_target_ids": [
+        "rtk",
+        "semble"
+      ],
+      "known_plugin_ids": [],
+      "known_mcp_server_ids": [],
+      "known_skill_ids": [],
+      "unknown_mcp_server_count": 0,
+      "unknown_skill_count": 0,
+      "unknown_plugin_count": 0,
+      "unknown_tool_id_count": 0
+    }
   }
 }

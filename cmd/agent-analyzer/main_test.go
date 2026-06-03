@@ -1592,6 +1592,41 @@ func TestAnalyzePaid_RejectsUnsafeArguments(t *testing.T) {
 	}
 }
 
+func TestProveSavings_WritesValidationReport(t *testing.T) {
+	isolatedDiscoveryHome(t)
+	dir := t.TempDir()
+	baselineLog := filepath.Join(dir, "baseline.jsonl")
+	currentLog := filepath.Join(dir, "current.jsonl")
+	baselineContent := `{"type":"assistant","message":{"usage":{"input_tokens":1000,"cache_creation_input_tokens":200,"output_tokens":100},"content":[{"type":"tool_use","name":"Bash","input":{"command":"cat src/a.go"}},{"type":"tool_result","content":"` + strings.Repeat("x", 400) + `"}]}}` + "\n"
+	currentContent := `{"type":"assistant","message":{"usage":{"input_tokens":500,"cache_creation_input_tokens":100,"output_tokens":80},"content":[{"type":"tool_use","name":"Bash","input":{"command":"cat src/a.go"}},{"type":"tool_result","content":"` + strings.Repeat("x", 120) + `"}]}}` + "\n"
+	writeLogContent(t, baselineLog, baselineContent)
+	writeLogContent(t, currentLog, currentContent)
+
+	baselineReportPath := filepath.Join(dir, "baseline-report.json")
+	if err := runAnalyze([]string{"--source", "claude_code", "--log", baselineLog, "--out", baselineReportPath}); err != nil {
+		t.Fatalf("baseline analyze: %v", err)
+	}
+	outPath := filepath.Join(dir, "followup-report.json")
+	if err := runProveSavings([]string{"--baseline", baselineReportPath, "--source", "claude_code", "--log", currentLog, "--out", outPath}); err != nil {
+		t.Fatalf("prove-savings: %v", err)
+	}
+	data, err := os.ReadFile(outPath)
+	if err != nil {
+		t.Fatalf("read follow-up report: %v", err)
+	}
+	var report analyzer.Report
+	if err := json.Unmarshal(data, &report); err != nil {
+		t.Fatalf("follow-up report is not JSON: %v", err)
+	}
+	if report.SavingsValidation == nil {
+		t.Fatalf("expected savings validation in follow-up report")
+	}
+	if report.SavingsValidation.EvidenceTier == "" {
+		t.Fatalf("expected evidence tier, got %#v", report.SavingsValidation)
+	}
+	assertReportDoesNotContain(t, report, baselineLog, currentLog)
+}
+
 func TestRunOneShot_AnalyzesAndUploadsSanitizedReport(t *testing.T) {
 	dir := t.TempDir()
 	logPath := writeSampleLog(t, dir)

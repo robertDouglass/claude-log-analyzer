@@ -13,10 +13,27 @@ ROOT = Path(__file__).resolve().parents[1]
 SUITES_DIR = ROOT / ".data" / "benchmarks" / "suites"
 REPORTS_DIR = ROOT / "web" / "proof" / "reports"
 RESULTS_JSON = ROOT / "web" / "proof" / "results.json"
+SUITE_FILES = [
+    ROOT / "docs" / "benchmarks" / "fixtures" / "tool-suite.json",
+    ROOT / "docs" / "benchmarks" / "fixtures" / "tool-suite-spec-kitty-high-context.json",
+]
 
 
 def load_json(path: Path) -> dict:
     return json.loads(path.read_text())
+
+
+def suite_metadata() -> dict[str, dict]:
+    metadata = {}
+    for suite_file in SUITE_FILES:
+        if not suite_file.exists():
+            continue
+        suite = load_json(suite_file)
+        for entry in suite.get("suites", []):
+            suite_id = entry.get("id")
+            if suite_id:
+                metadata[suite_id] = entry
+    return metadata
 
 
 def metric_mean(aggregate: dict, key: str):
@@ -150,11 +167,14 @@ def published_api_estimate(suite_dir: Path) -> dict | None:
 
 def publish_aggregates() -> dict[str, dict]:
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    metadata = suite_metadata()
     published = {}
     diagnostic = {}
     for aggregate_path in sorted(SUITES_DIR.glob("*/aggregate.json")):
         suite_id = aggregate_path.parent.name
         aggregate = load_json(aggregate_path)
+        suite_entry = metadata.get(suite_id, {})
+        promotion_policy = suite_entry.get("promotion_policy", "recommendation_evidence")
         public_name = f"aggregate-{suite_id}.json"
         public_path = REPORTS_DIR / public_name
         public = {
@@ -167,6 +187,9 @@ def publish_aggregates() -> dict[str, dict]:
             "failed_repeats": aggregate.get("failed_repeats", []),
             "delta_stats": aggregate.get("delta_stats", {}),
             "run_dirs": aggregate.get("run_dirs", []),
+            "promotion_policy": promotion_policy,
+            "candidate_source_url": suite_entry.get("candidate_source_url"),
+            "candidate_issue": suite_entry.get("candidate_issue"),
             "published_api_cost_estimate": published_api_estimate(aggregate_path.parent),
             "privacy_boundary": "Raw Claude/Codex logs, raw prompts, local paths, and secrets are not included in public aggregate artifacts.",
         }
@@ -196,8 +219,11 @@ def publish_aggregates() -> dict[str, dict]:
             ).get("scaled_examples") if (
                 public["published_api_cost_estimate"] or {}
             ).get("complete_cost_surface", True) else None,
+            "promotion_policy": promotion_policy,
+            "candidate_source_url": public["candidate_source_url"],
+            "candidate_issue": public["candidate_issue"],
         }
-        if public["quality_passed"] and public["completed_repeats"] >= 3:
+        if public["quality_passed"] and public["completed_repeats"] >= 3 and promotion_policy == "recommendation_evidence":
             published[suite_id] = entry
         else:
             diagnostic[suite_id] = entry

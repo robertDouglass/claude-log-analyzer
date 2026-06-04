@@ -22,6 +22,10 @@ PRIMARY_SUITES = PRIMARY_DATA / "suites"
 PROOF = ROOT / "web" / "proof"
 REPORTS = PROOF / "reports"
 RESULTS_JSON = PROOF / "results.json"
+SUITE_FILES = [
+    BENCHMARK_DOCS / "fixtures" / "tool-suite.json",
+    BENCHMARK_DOCS / "fixtures" / "tool-suite-spec-kitty-high-context.json",
+]
 
 FORBIDDEN_PRIVATE_PATTERNS = [
     re.compile(r"/Users/"),
@@ -61,18 +65,22 @@ def check_no_private_paths(errors: list[str]) -> None:
 
 
 def check_fixture_files(errors: list[str]) -> None:
-    for suite_file in [
-        BENCHMARK_DOCS / "fixtures" / "tool-suite.json",
-        BENCHMARK_DOCS / "fixtures" / "tool-suite-spec-kitty-high-context.json",
-    ]:
+    for suite_file in SUITE_FILES:
         suite = load_json(suite_file)
         target = suite.get("target", {})
         for key in ("task_prompt_file", "mcp_config_file"):
             value = target.get(key)
             if value:
                 require((ROOT / value).exists(), f"{rel(suite_file)} target {key} missing: {value}", errors)
+        prepare_command = target.get("prepare_command", "")
+        if prepare_command and "scripts/" in prepare_command:
+            script = prepare_command.split("scripts/", 1)[1].split()[0].strip("'\"")
+            require((ROOT / "scripts" / script).exists(), f"{rel(suite_file)} target prepare_command script missing: scripts/{script}", errors)
         for item in suite.get("suites", []):
             for key in (
+                "guidance_file",
+                "pre_task_prompt_file",
+                "mcp_config_file",
                 "task_prompt_file",
                 "optimized_guidance_file",
                 "optimized_pre_task_prompt_file",
@@ -114,6 +122,17 @@ def report_aggregates() -> dict[str, Path]:
     }
 
 
+def suite_metadata() -> dict[str, dict]:
+    metadata = {}
+    for suite_file in SUITE_FILES:
+        suite = load_json(suite_file)
+        for item in suite.get("suites", []):
+            suite_id = item.get("id")
+            if suite_id:
+                metadata[suite_id] = item
+    return metadata
+
+
 def quality_passed(aggregate: dict) -> bool:
     if aggregate.get("completed_repeats", 0) < aggregate.get("required_repeats", 3):
         return False
@@ -132,6 +151,7 @@ def quality_passed(aggregate: dict) -> bool:
 def check_suite_artifacts(errors: list[str]) -> None:
     suites = suite_dirs()
     reports = report_aggregates()
+    metadata = suite_metadata()
     require(set(suites) == set(reports), "primary-data suites and published aggregate reports differ", errors)
 
     results = load_json(RESULTS_JSON)
@@ -148,10 +168,13 @@ def check_suite_artifacts(errors: list[str]) -> None:
 
         aggregate = load_json(aggregate_path)
         public = load_json(reports[suite_id])
+        suite_entry = metadata.get(suite_id, {})
+        promotion_policy = suite_entry.get("promotion_policy", "recommendation_evidence")
         require(public.get("suite_id") == suite_id, f"{suite_id} published aggregate has wrong suite_id", errors)
         require(public.get("quality_passed") == quality_passed(aggregate), f"{suite_id} published quality_passed disagrees with primary aggregate", errors)
         require(public.get("required_repeats") == aggregate.get("required_repeats"), f"{suite_id} required_repeats mismatch", errors)
         require(public.get("completed_repeats") == aggregate.get("completed_repeats"), f"{suite_id} completed_repeats mismatch", errors)
+        require(public.get("promotion_policy", "recommendation_evidence") == promotion_policy, f"{suite_id} promotion_policy mismatch", errors)
 
         run_dirs = aggregate.get("run_dirs", [])
         require(len(run_dirs) == aggregate.get("completed_repeats"), f"{suite_id} run_dirs length does not match completed_repeats", errors)
@@ -175,7 +198,12 @@ def check_suite_artifacts(errors: list[str]) -> None:
             require(public.get("quality_passed") is True, f"{suite_id} repeated artifact is not quality-passed", errors)
             require(public.get("completed_repeats", 0) >= 3, f"{suite_id} repeated artifact has fewer than 3 repeats", errors)
         if is_diagnostic:
-            require(not (public.get("quality_passed") and public.get("completed_repeats", 0) >= 3), f"{suite_id} diagnostic artifact looks promotable", errors)
+            candidate_policy = promotion_policy in {"candidate_until_reviewed", "research_only", "diagnostic_only"}
+            require(
+                candidate_policy or not (public.get("quality_passed") and public.get("completed_repeats", 0) >= 3),
+                f"{suite_id} diagnostic artifact looks promotable without a candidate/research promotion policy",
+                errors,
+            )
 
 
 def check_docs_and_pages(errors: list[str]) -> None:

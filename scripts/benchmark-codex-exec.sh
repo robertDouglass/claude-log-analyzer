@@ -10,7 +10,7 @@ Required:
 
 Optional:
   SOURCE_REPO=$PWD
-  ANALYZER_REPO=<directory containing claude-analyzer source>
+  ANALYZER_REPO=<directory containing agent-analyzer source>
   BASE_REF=HEAD
   OUT_DIR=.data/benchmarks/codex-exec-token-savings
   CODEX_BIN=codex
@@ -169,7 +169,7 @@ PY
 
 analyze_log() {
   local label="$1"
-  go run "$ANALYZER_REPO/cmd/claude-analyzer" analyze \
+  go run "$ANALYZER_REPO/cmd/agent-analyzer" analyze \
     --log "$OUT_DIR/$label-events.jsonl" \
     --out "$OUT_DIR/$label-report.json" >"$OUT_DIR/$label-analyze.txt"
 }

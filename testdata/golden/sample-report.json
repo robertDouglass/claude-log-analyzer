@@ -323,7 +323,7 @@
       ],
       "evidence_counts": {}
     },
-    "registry_version": "phase-a-2026-05-28-squeez-removed",
+    "registry_version": "phase-a-2026-06-03-codegraph-source-reviewed",
     "engine_version": "v0.2-benchmark-narrowed",
     "signals": [
       "no_usage_visibility",

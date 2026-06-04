@@ -2,8 +2,9 @@
   "schema_version": "2026-05-24",
   "description": "Permanent three-repeat benchmark fixture suite for Claude Analyzer token/cost recommendations.",
   "target": {
-    "source_repo_default": "/tmp/agent-analyzer-benchmark-target-v3",
-    "fixed_commit": "b96b8a7f5cc57c4335bc7bc85ec726c836ed0996",
+    "source_repo_default": "/tmp/agent-analyzer-owner-breakdown-target-v1",
+    "prepare_command": "\"$ANALYZER_REPO/scripts/prepare-owner-breakdown-benchmark-target.sh\"",
+    "fixed_commit": "benchmark/owner-breakdown-v1-base",
     "task_prompt_file": "docs/benchmarks/fixtures/tasks/owner-breakdown-v3-noisy.txt",
     "quality_command": "go test ./..."
   },
@@ -66,6 +67,24 @@
       },
       "requires": [
         "grepai"
+      ]
+    },
+    {
+      "id": "codegraph-claude",
+      "tool": "CodeGraph",
+      "harness": "claude",
+      "guidance_file": "docs/benchmarks/fixtures/guidance/codegraph-claude-guidance.txt",
+      "mcp_config_file": "docs/benchmarks/fixtures/mcp/codegraph-npx.json",
+      "promotion_policy": "candidate_until_reviewed",
+      "candidate_source_url": "https://github.com/colbymchenry/codegraph",
+      "candidate_issue": "https://github.com/Priivacy-ai/agent-log-analyzer/issues/173",
+      "env": {
+        "AGENT_PLUGIN_ENABLED": "0",
+        "TOOLING_REVIEW_ENABLED": "0",
+        "OPTIMIZED_SETUP_COMMAND": "\"$ANALYZER_REPO/scripts/setup-codegraph-benchmark.sh\""
+      },
+      "requires": [
+        "npx"
       ]
     },
     {

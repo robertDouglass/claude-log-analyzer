@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "codegraph": {
+      "command": "npx",
+      "args": [
+        "--yes",
+        "@colbymchenry/codegraph@0.9.9",
+        "serve",
+        "--mcp"
+      ],
+      "env": {
+        "CODEGRAPH_NO_DOWNLOAD": "1"
+      }
+    }
+  }
+}
+

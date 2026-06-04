@@ -176,6 +176,27 @@ func TestRTKDisambiguatesUnrelatedNPMPackage(t *testing.T) {
 	}
 }
 
+func TestCodeGraphResearchOnlyUntilBenchmarkProof(t *testing.T) {
+	tool, ok := GetTool("codegraph")
+	if !ok {
+		t.Fatal("codegraph missing from registry")
+	}
+	if tool.SourceURL != "https://github.com/colbymchenry/codegraph" {
+		t.Fatalf("codegraph SourceURL = %q", tool.SourceURL)
+	}
+	if tool.InstallPolicy != PolicyResearchOnly || !tool.ResearchOnly {
+		t.Fatalf("codegraph must remain research-only until repeated benchmark proof; got policy=%q research_only=%v",
+			tool.InstallPolicy, tool.ResearchOnly)
+	}
+	if tool.FreeReportAllowed || tool.PaidPackAllowed {
+		t.Fatalf("codegraph must not be emitted in report packs before promotion; free=%v paid=%v",
+			tool.FreeReportAllowed, tool.PaidPackAllowed)
+	}
+	if !strings.Contains(strings.ToLower(tool.Notes), "repeated local benchmark proof") {
+		t.Fatalf("codegraph Notes must explain benchmark gate: %q", tool.Notes)
+	}
+}
+
 func TestRegistryAllowlistCoverage(t *testing.T) {
 	// Step 1: brief allowlist has no internal duplicates.
 	seenBrief := make(map[ToolID]int, len(briefAllowlist))
@@ -221,7 +242,7 @@ func TestRegistryAllowlistCoverage(t *testing.T) {
 }
 
 func TestRegistryVersionConstant(t *testing.T) {
-	if got, want := RegistryVersion(), "phase-a-2026-05-28-squeez-removed"; got != want {
+	if got, want := RegistryVersion(), "phase-a-2026-06-03-codegraph-source-reviewed"; got != want {
 		t.Errorf("RegistryVersion() = %q, want %q", got, want)
 	}
 }

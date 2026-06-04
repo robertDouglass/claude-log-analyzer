@@ -33,6 +33,12 @@ These tools reduced published API-rate cost in 3/3 repeated runs on the noisy be
 | RTK | https://github.com/rtk-ai/rtk | Explicit shell-output compression | `18.2%` | Recommend explicit commands first; global hooks require separate approval. |
 | grepai | https://github.com/yoanbernabeu/grepai | Path-constrained compact retrieval | `14.5%` | Recommend only with small limits and path filters. |
 
+## Candidate Reducers, Not Yet Recommendations
+
+| Tool | Source | Primary category | Evidence state | Product decision |
+| --- | --- | --- | --- | --- |
+| CodeGraph | https://github.com/colbymchenry/codegraph | Pre-indexed code-graph retrieval through MCP | Source reviewed; Agent Analyzer benchmark pending | Keep research-only until `codegraph-claude` has repeated local proof and a separate promotion change. |
+
 ## Measurement, Not Reduction
 
 | Tool | Source | Decision |

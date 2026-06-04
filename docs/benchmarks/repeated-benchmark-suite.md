@@ -22,18 +22,30 @@ Run named suites from the auditable fixture file:
 REPEATS=3 ./scripts/benchmark-suite.sh
 ```
 
+Validate target preparation and suite wiring without launching an agent:
+
+```sh
+DRY_RUN=1 ONLY=codegraph-claude REPEATS=1 ./scripts/benchmark-suite.sh
+```
+
 Run selected suites:
 
 ```sh
 ONLY=agent-analyzer-guided-v3,rtk-explicit,codex-guided REPEATS=3 ./scripts/benchmark-suite.sh
 ```
 
+Run the CodeGraph candidate suite:
+
+```sh
+ONLY=codegraph-claude REPEATS=3 ./scripts/benchmark-suite.sh
+```
+
 Run a single harness directly:
 
 ```sh
 TASK_PROMPT_FILE=docs/benchmarks/fixtures/tasks/owner-breakdown-v3-noisy.txt \
-SOURCE_REPO=/tmp/agent-analyzer-benchmark-target-v3 \
-BASE_REF=b96b8a7f5cc57c4335bc7bc85ec726c836ed0996 \
+SOURCE_REPO=/tmp/agent-analyzer-owner-breakdown-target-v1 \
+BASE_REF=benchmark/owner-breakdown-v1-base \
 QUALITY_COMMAND='go test ./...' \
 HARNESS=claude \
 RUN_NAME=rtk-explicit \
@@ -66,20 +78,34 @@ Before publishing proof-page changes, run:
 
 The validator checks that repeated verdicts have at least three quality-passing fresh pairs, diagnostic/smoke runs are not promoted into recommendation evidence, primary-data SHA-256 entries match the committed files, proof aggregates map to committed primary recordings, fixture references exist, and private local path patterns are absent from the public benchmark artifacts.
 
+Candidate suites can set `promotion_policy: "candidate_until_reviewed"`.
+Those suites may publish diagnostic aggregate artifacts, but they do not enter
+the repeated recommendation bucket until a later reviewed change removes the
+candidate gate. CodeGraph uses this gate.
+
 ## Fixture Contract
 
 The permanent fixture lives under `docs/benchmarks/fixtures/`:
 
 - `tool-suite.json`: named suites, harnesses, required tools, fixed commit, quality command, and optimized guidance files
+- `scripts/prepare-owner-breakdown-benchmark-target.sh`: deterministic local target generator for future owner-breakdown runs
 - `tasks/owner-breakdown-v3-noisy.txt`: the task prompt
 - `guidance/*.txt`: optimized guidance for each recommendation
 - `mcp/claude-context-local.json`: local Ollama/Milvus MCP config template
 
-Target repository commit:
+Current reproducible target:
 
 ```text
-b96b8a7f5cc57c4335bc7bc85ec726c836ed0996
+/tmp/agent-analyzer-owner-breakdown-target-v1
+benchmark/owner-breakdown-v1-base
 ```
+
+The generator currently produces commit
+`1116b800a71cc532b37422f9b56b4391b3cf81f9` with fixed git metadata. Historical
+primary-data artifacts committed before 2026-06-04 still record the older
+`b96b8a7f5cc57c4335bc7bc85ec726c836ed0996` target in their per-run
+`comparison.json` files; use those recorded fields when auditing old proof
+results.
 
 Quality gate:
 
@@ -106,6 +132,10 @@ All rows below passed the quality gate in all three repeats.
 | Agent Analyzer text guidance | Codex | `-14,520` | `-14,527` | output `-483`; reasoning `-45`; uncached+output `-24,369` | API estimate `-$0.062392` | `-31.8%` | Positive here |
 | Caveman | Claude Code | `+4,355` | `+4,868` | Claude output `-370` | native `+$0.009919`; API estimate `+$0.009211` | `+3.9%` | Removed |
 | Caveman | Codex | `-9,210` | `-9,109` | output `-172`; reasoning `-2`; uncached+output `-4,739` | API estimate `-$0.033986` | `-18.3%` | Harness-specific |
+
+CodeGraph is not in this table yet. It has a pinned candidate suite
+(`codegraph-claude`) and remains research-only until the suite has fresh
+3x quality-passing Agent Analyzer evidence and a separate promotion review.
 
 ccusage and ccstatusline are telemetry-only. They are useful for cost/context awareness, but they are not task interventions and are no longer represented as direct token reducers in the paid pack.
 

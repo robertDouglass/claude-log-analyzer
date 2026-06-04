@@ -12,6 +12,7 @@ This note records the additional tools and approaches added after the first benc
 | Semble | Local code-aware chunks with semantic and BM25 retrieval | Input/context through compact retrieval | Positive here: repeated task runs saved estimated, tool-output, output, and cost. |
 | Squeez | Explicit shell-output compression via `squeez wrap` | Tool-output/input-context | Removed from recommendations: repeated task runs saved tool-output/cost, but it conflicts with Spec Kitty workflows. |
 | RTK | Explicit shell-output compression via `rtk` | Tool-output/input-context | Conditional: useful for noisy shell output; keep global hooks waiver-gated. |
+| CodeGraph | Local CodeGraph MCP server with pre-indexed symbol/call graph queries | Input/context through code-aware retrieval | Candidate only. Source/package reviewed, benchmark fixture added, but no Agent Analyzer recommendation until our repeated A/B proof passes. |
 
 ## Smoke Results
 
@@ -21,6 +22,7 @@ Smoke tests remain useful only as mechanism checks:
 - Semble returned relevant parser, aggregate, render, sort, and test files from path-limited searches.
 - Squeez compressed noisy failing Go test output from 7,088 bytes to 1,603 bytes while preserving failure details.
 - RTK compressed the same noisy failing Go test output from 7,088 bytes to 963 bytes.
+- CodeGraph package smoke review verified `@colbymchenry/codegraph@0.9.9`, MIT license, pinned npx launch, local `.codegraph/` index setup, MCP command shape `codegraph serve --mcp`, and uninstall/uninit boundaries. Task-level savings are still unproven by Agent Analyzer.
 
 Smoke success did not automatically predict task-level savings. The repeated task benchmark below is the product evidence.
 
@@ -34,6 +36,7 @@ All rows passed `go test ./...` in all three repeats.
 | Semble | 3/3 | `-16,301` | `-16,060` | Claude output `-480` | native `-$0.089147`; API estimate `-$0.114194` | Positive here |
 | Squeez | 3/3 | `-8,471` | `-8,917` | Claude output `+73` | native `-$0.014049`; API estimate `-$0.028224` | Removed: conflicts with Spec Kitty |
 | RTK | 3/3 | `-12,446` | `-12,716` | Claude output `+114` | native `-$0.031479`; API estimate `-$0.044316` | Conditional |
+| CodeGraph | pending | pending | pending | pending | pending | Candidate only; run `ONLY=codegraph-claude REPEATS=3 ./scripts/benchmark-suite.sh` before any promotion. |
 
 ## Product Actions
 
@@ -42,6 +45,7 @@ All rows passed `go test ./...` in all three repeats.
 - Do not recommend Squeez because it conflicts with Spec Kitty workflows.
 - Do not add Probe as a default recommendation for this task family.
 - Keep smoke-test claims separate from task benchmark claims.
+- Keep CodeGraph research-only until the `codegraph-claude` suite has three quality-passing pairs and a follow-up promotion change updates the registry/report pack.
 
 ## Artifacts
 
@@ -49,3 +53,4 @@ All rows passed `go test ./...` in all three repeats.
 - `web/proof/reports/aggregate-semble.json`
 - `web/proof/reports/aggregate-squeez.json`
 - `web/proof/reports/aggregate-rtk-explicit.json`
+- Pending CodeGraph candidate artifact after local run: `web/proof/reports/aggregate-codegraph-claude.json`

@@ -623,6 +623,18 @@
       "note": "Published API-rate estimate for exposed Claude Sonnet token categories. Claude Code reported total_cost_usd can differ because Claude Code may route or account for additional internal model usage."
     }
   },
+  "candidate_trials": [
+    {
+      "candidate": "CodeGraph",
+      "source": "https://github.com/colbymchenry/codegraph",
+      "primary_token_category": "input_context_tokens_via_code_graph_retrieval",
+      "evidence_state": "source_reviewed_benchmark_pending",
+      "suite_id": "codegraph-claude",
+      "promotion_policy": "candidate_until_reviewed",
+      "current_product_status": "research_only",
+      "promotion_gate": "Run ONLY=codegraph-claude REPEATS=3 ./scripts/benchmark-suite.sh, publish sanitized aggregate artifacts, validate them, then land a separate promotion change if quality and savings pass."
+    }
+  ],
   "replication_policy": {
     "minimum_repeats_for_strong_claim": 3,
     "fresh_context_required": true,

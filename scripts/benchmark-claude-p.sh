@@ -10,7 +10,7 @@ Required:
 
 Optional:
   SOURCE_REPO=$PWD
-  ANALYZER_REPO=<directory containing claude-analyzer source>
+  ANALYZER_REPO=<directory containing agent-analyzer source>
   BASE_REF=HEAD
   OUT_DIR=.data/benchmarks/claude-p-plugin-token-savings
   CLAUDE_BIN=claude
@@ -268,7 +268,7 @@ analyze_log() {
     while IFS= read -r log_path; do
       [[ -z "$log_path" ]] && continue
       index=$((index + 1))
-      go run "$ANALYZER_REPO/cmd/claude-analyzer" analyze \
+      go run "$ANALYZER_REPO/cmd/agent-analyzer" analyze \
         --log "$log_path" \
         --out "$report_dir/report-$(printf '%02d' "$index").json" >"$report_dir/report-$(printf '%02d' "$index").txt"
     done <"$OUT_DIR/$label.log-paths"
@@ -307,7 +307,7 @@ PY
     return
   fi
   log_path="$(cat "$OUT_DIR/$label.log-path")"
-  go run "$ANALYZER_REPO/cmd/claude-analyzer" analyze \
+  go run "$ANALYZER_REPO/cmd/agent-analyzer" analyze \
     --log "$log_path" \
     --out "$OUT_DIR/$label-report.json" >"$OUT_DIR/$label-analyze.txt"
 }
@@ -331,7 +331,7 @@ run_quality_gate baseline "$BASELINE_WT"
 analyze_log baseline
 
 if [[ "$AGENT_PLUGIN_ENABLED" == "1" ]]; then
-  go run "$ANALYZER_REPO/cmd/claude-analyzer" plugin \
+  go run "$ANALYZER_REPO/cmd/agent-analyzer" plugin \
     --report "$OUT_DIR/baseline-report.json" \
     --out "$PLUGIN_ZIP" >"$OUT_DIR/plugin-generate.txt"
 else

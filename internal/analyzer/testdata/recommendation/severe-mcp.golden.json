@@ -39,7 +39,7 @@
     "ambiguity_warning": "RTK means github.com/rtk-ai/rtk. Do not install or recommend the unrelated npm package named rtk.",
     "evidence_counts": {}
   },
-  "registry_version": "phase-a-2026-05-28-squeez-removed",
+  "registry_version": "phase-a-2026-06-03-codegraph-source-reviewed",
   "engine_version": "v0.2-benchmark-narrowed",
   "signals": [
     "mcp_skill_bloat",

@@ -73,7 +73,9 @@ registry because it conflicts with Spec Kitty workflows.
 **`retrieval`** — Code-aware retrieval that replaces broad file reads.
 Responds to `repeated_file_reads` and `broad_repo_exploration`. The
 benchmark-narrowed defaults promote `Semble` and `grepai` for scoped local
-retrieval. `claude_context` remains research-only after adding overhead in
+retrieval. `CodeGraph` has a verified source URL and a pinned benchmark
+candidate suite, but remains research-only until Agent Analyzer has repeated
+local proof. `claude_context` remains research-only after adding overhead in
 the current fixture. Stacking is forbidden unless waste persists in a
 different retrieval mode.
 
@@ -112,7 +114,7 @@ recommendations leave them empty.
 Adding, removing, or modifying any registry entry must bump
 `RegistryVersion()` — a CI test compares the live value to a checked-in
 golden constant and fails fast otherwise. The current benchmark-narrowed
-registry is `"phase-a-2026-05-28-squeez-removed"`; see NFR-005.
+registry is `"phase-a-2026-06-03-codegraph-source-reviewed"`; see NFR-005.
 
 For URL verification, see `research.md` §"Per-tool research notes". The
 short version: Phase A does **not** invent or guess source URLs. Every

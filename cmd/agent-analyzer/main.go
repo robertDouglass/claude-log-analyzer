@@ -26,6 +26,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/priivacy-ai/agent-log-analyzer/internal/analyzer"
+	"github.com/priivacy-ai/agent-log-analyzer/internal/remediation"
 	_ "modernc.org/sqlite"
 )
 
@@ -67,6 +68,8 @@ func run(args []string) error {
 		return runOneShot(args[1:])
 	case "analyze":
 		return runAnalyze(args[1:])
+	case "plugin":
+		return runPlugin(args[1:])
 	case "prove-savings", "follow-up":
 		return runProveSavings(args[1:])
 	case "full-scan":
@@ -1142,6 +1145,42 @@ func runUpload(args []string) error {
 	if result.ExpiresAt != nil && !result.ExpiresAt.IsZero() {
 		fmt.Printf("Expires: %s\n", result.ExpiresAt.Local().Format(time.RFC1123))
 	}
+	return nil
+}
+
+func runPlugin(args []string) error {
+	fs := flag.NewFlagSet("plugin", flag.ContinueOnError)
+	reportPath := fs.String("report", "agent-analyzer-report.json", "sanitized analyzer report JSON")
+	out := fs.String("out", "agent-analyzer-optimization-plugin.zip", "path to write Claude Code plugin zip")
+	artifactURL := fs.String("artifact-url", "", "optional short-lived artifact URL to embed in install instructions")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 0 {
+		return errors.New("usage: agent-analyzer plugin [--report sanitized-report.json] [--out plugin.zip]")
+	}
+	data, err := os.ReadFile(*reportPath)
+	if err != nil {
+		return err
+	}
+	var report analyzer.Report
+	if err := json.Unmarshal(data, &report); err != nil {
+		return fmt.Errorf("report is not valid analyzer JSON: %w", err)
+	}
+	if report.SecurityReceipt.RawTranscriptSentToLLM {
+		return errors.New("refusing to generate plugin from a report that claims raw transcript was sent to an LLM")
+	}
+	artifact := remediation.Generate(report, remediation.Options{ArtifactURL: *artifactURL})
+	var buffer bytes.Buffer
+	if err := remediation.WriteZip(&buffer, artifact); err != nil {
+		return err
+	}
+	if err := os.WriteFile(*out, buffer.Bytes(), 0o600); err != nil {
+		return err
+	}
+	fmt.Printf("Generated plugin: %s (%d bytes)\n", *out, buffer.Len())
+	fmt.Printf("Load for one Claude Code session: claude --plugin-dir %s\n", shellQuote(*out))
+	fmt.Println("Review WAIVER.md and /agent-analyzer-tooling before installing optional tools.")
 	return nil
 }
 
@@ -3166,6 +3205,7 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "  --paid         legacy alias: analyze target-sized recent supported logs locally and write a sanitized aggregate report.")
 	fmt.Fprintf(os.Stderr, "  --limit <n>    maximum recent logs per source for aggregate modes, capped at %d (default: %d).\n", maxAutoLogLimit, defaultAutoLogLimit)
 	fmt.Fprintln(os.Stderr, "")
+	fmt.Fprintln(os.Stderr, "  agent-analyzer plugin [--report sanitized-report.json] [--out plugin.zip]")
 	fmt.Fprintln(os.Stderr, "  agent-analyzer upload <sanitized-report.json> [--base-url https://analyzer.spec-kitty.ai]")
 	fmt.Fprintln(os.Stderr, "  agent-analyzer version")
 }

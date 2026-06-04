@@ -274,6 +274,33 @@
       </section>
 
       <section class="panel">
+        <h2>Candidate Queue</h2>
+        <div class="table-scroll">
+        <table class="comparison-table results-table">
+          <thead>
+            <tr>
+              <th>Candidate</th>
+              <th>Target category</th>
+              <th>Evidence state</th>
+              <th>Promotion gate</th>
+              <th>Current product status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a class="text-link" href="https://github.com/colbymchenry/codegraph">CodeGraph</a></td>
+              <td>Pre-indexed code-graph retrieval through MCP</td>
+              <td>Source reviewed; Agent Analyzer repeated benchmark pending</td>
+              <td><code>ONLY=codegraph-claude REPEATS=3 ./scripts/benchmark-suite.sh</code></td>
+              <td><span class="verdict neutral">Research-only</span></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="command-note">Candidate rows are not recommendations. They stay out of generated artifacts until local Agent Analyzer proof passes and a later reviewed change promotes them.</p>
+      </section>
+
+      <section class="panel">
         <h2>Codex And Caveman Controls</h2>
         <div class="table-scroll">
         <table class="comparison-table results-table controls-matrix">

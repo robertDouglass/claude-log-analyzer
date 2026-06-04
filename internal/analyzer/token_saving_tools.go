@@ -31,7 +31,7 @@ type ToolID string
 // in any observable way (added/removed tool, field edit, ordering
 // change). NFR-005 in spec.md gates this; a CI test compares the live
 // value to a checked-in golden constant.
-const registryVersion = "phase-a-2026-05-28-squeez-removed"
+const registryVersion = "phase-a-2026-06-03-codegraph-source-reviewed"
 
 // TokenSavingTool is one immutable registry entry. The struct shape is
 // frozen by contracts/token_saving_engine_go_api.md.
@@ -307,8 +307,8 @@ var registry = []TokenSavingTool{
 	},
 	{
 		ID:                  "codegraph",
-		DisplayName:         "codegraph",
-		SourceURL:           "",
+		DisplayName:         "CodeGraph",
+		SourceURL:           "https://github.com/colbymchenry/codegraph",
 		Category:            "retrieval",
 		RecommendationClass: "retrieval",
 		ClassRank:           4,
@@ -319,7 +319,7 @@ var registry = []TokenSavingTool{
 		PaidPackAllowed:     false,
 		ResearchOnly:        true,
 		InstallPolicy:       "research_only",
-		Notes:               "Brief allowlist; canonical source URL unverified — Phase B verification gap.",
+		Notes:               "Source reviewed as @colbymchenry/codegraph; candidate remains research-only until Agent Analyzer has repeated local benchmark proof.",
 	},
 	{
 		ID:                  "codebase_memory_mcp",

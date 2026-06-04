@@ -11,6 +11,8 @@ Optional:
   SOURCE_REPO=<target repo>           default from suite file
   REPEATS=3                           default from suite file
   ONLY=id1,id2                        run only selected suite ids
+  DRY_RUN=1                           prepare and validate suite wiring only
+  SKIP_TARGET_PREP=1                  skip target prepare_command
   SKIP_REQUIRES=1                     skip local dependency checks
 
 Examples:
@@ -29,8 +31,10 @@ SUITE_FILE="${SUITE_FILE:-$ANALYZER_REPO/docs/benchmarks/fixtures/tool-suite.jso
 OUT_ROOT="${OUT_ROOT:-$ANALYZER_REPO/.data/benchmarks/suites}"
 ONLY="${ONLY:-}"
 SKIP_REQUIRES="${SKIP_REQUIRES:-0}"
+SKIP_TARGET_PREP="${SKIP_TARGET_PREP:-0}"
+DRY_RUN="${DRY_RUN:-0}"
 
-python3 - "$ANALYZER_REPO" "$SUITE_FILE" "$OUT_ROOT" "$ONLY" "$SKIP_REQUIRES" <<'PY'
+python3 - "$ANALYZER_REPO" "$SUITE_FILE" "$OUT_ROOT" "$ONLY" "$SKIP_REQUIRES" "$SKIP_TARGET_PREP" "$DRY_RUN" <<'PY'
 import json
 import os
 import shutil
@@ -43,6 +47,8 @@ suite_file = Path(sys.argv[2]).resolve()
 out_root = Path(sys.argv[3]).resolve()
 only = {item for item in sys.argv[4].split(",") if item}
 skip_requires = sys.argv[5] == "1"
+skip_target_prep = sys.argv[6] == "1"
+dry_run = sys.argv[7] == "1"
 
 suite = json.loads(suite_file.read_text())
 target = suite["target"]
@@ -50,10 +56,28 @@ source_repo = Path(os.environ.get("SOURCE_REPO", target["source_repo_default"]))
 repeats = os.environ.get("REPEATS", str(suite.get("default_repeats", 3)))
 base_ref = os.environ.get("BASE_REF", target["fixed_commit"])
 quality_command = os.environ.get("QUALITY_COMMAND", target["quality_command"])
+prepare_command = target.get("prepare_command", "")
 setup_command = target.get("setup_command", "")
 task_prompt_file = analyzer_repo / target["task_prompt_file"]
 repeat_script = analyzer_repo / "scripts" / "benchmark-repeat.sh"
 out_root.mkdir(parents=True, exist_ok=True)
+
+if prepare_command and not skip_target_prep:
+    prep_env = os.environ.copy()
+    prep_env.update({
+        "ANALYZER_REPO": str(analyzer_repo),
+        "SOURCE_REPO": str(source_repo),
+        "BASE_REF": base_ref,
+    })
+    print(f"[target] preparing {source_repo} via {prepare_command}", flush=True)
+    subprocess.run(prepare_command, cwd=str(analyzer_repo), env=prep_env, shell=True, check=True)
+
+if not (source_repo / ".git").exists():
+    raise SystemExit(f"benchmark target is not a git repository: {source_repo}")
+target_commit = subprocess.check_output(
+    ["git", "-C", str(source_repo), "rev-parse", base_ref],
+    text=True,
+).strip()
 
 def resolve(path_value):
     if not path_value:
@@ -127,6 +151,23 @@ for entry in suite["suites"]:
         env["OPTIMIZED_EXTRA_PLUGIN_DIRS"] = ":".join(resolve(path) for path in entry["extra_plugin_dirs"])
     env.update(entry.get("env", {}))
 
+    if dry_run:
+        status = {
+            "schema_version": "2026-05-24",
+            "suite_id": suite_id,
+            "status": "dry_run",
+            "out_dir": str(suite_out),
+            "source_repo": str(source_repo),
+            "base_ref": base_ref,
+            "target_commit": target_commit,
+            "harness": entry["harness"],
+            "repeats": int(repeats),
+        }
+        (suite_out / "dry-run.json").write_text(json.dumps(status, indent=2) + "\n")
+        print(f"[{suite_id}] dry-run ok target={target_commit[:12]}", flush=True)
+        summary.append(status)
+        continue
+
     print(f"[{suite_id}] running {entry['harness']} repeats={repeats}", flush=True)
     result = subprocess.run([str(repeat_script)], cwd=str(analyzer_repo), env=env)
     status = {
@@ -146,6 +187,7 @@ for entry in suite["suites"]:
     "suite_file": str(suite_file),
     "source_repo": str(source_repo),
     "base_ref": base_ref,
+    "target_commit": target_commit,
     "repeats": int(repeats),
     "results": summary,
 }, indent=2) + "\n")

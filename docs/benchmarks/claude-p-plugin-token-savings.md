@@ -103,13 +103,13 @@ This creates three fresh baseline/optimized pairs and an `aggregate.json` with m
 3. Analyze the baseline JSONL log:
 
    ```sh
-   claude-analyzer analyze --log "$BASELINE_LOG" --out baseline-report.json
+   agent-analyzer analyze --log "$BASELINE_LOG" --out baseline-report.json
    ```
 
 4. Generate the plugin from the baseline report:
 
    ```sh
-   claude-analyzer plugin --report baseline-report.json --out agent-analyzer-plugin.zip
+   agent-analyzer plugin --report baseline-report.json --out agent-analyzer-plugin.zip
    ```
 
 5. Review plugin guidance in a separate setup session without installing optional tools:
@@ -128,7 +128,7 @@ This creates three fresh baseline/optimized pairs and an `aggregate.json` with m
 8. Analyze the optimized JSONL log:
 
    ```sh
-   claude-analyzer analyze --log "$OPTIMIZED_LOG" --out optimized-report.json
+   agent-analyzer analyze --log "$OPTIMIZED_LOG" --out optimized-report.json
    ```
 
 9. Compare:

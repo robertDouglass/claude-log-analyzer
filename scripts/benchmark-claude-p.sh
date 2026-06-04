@@ -216,6 +216,16 @@ $prompt"
   if [[ -n "$OPTIMIZED_MCP_CONFIG_FILE" && "$label" == "optimized" ]]; then
     mcp_flags+=(--mcp-config "$OPTIMIZED_MCP_CONFIG_FILE")
   fi
+  {
+    printf '%s' "$claude_args"
+    if [[ "${#plugin_flags[@]}" -gt 0 ]]; then
+      printf ' %q' "${plugin_flags[@]}"
+    fi
+    if [[ "${#mcp_flags[@]}" -gt 0 ]]; then
+      printf ' %q' "${mcp_flags[@]}"
+    fi
+    printf '\n'
+  } >"$OUT_DIR/$label-claude-actual-args.txt"
   set +e
   (cd "$worktree" && "$CLAUDE_BIN" ${plugin_flags[@]+"${plugin_flags[@]}"} $claude_args ${mcp_flags[@]+"${mcp_flags[@]}"} -p "$prompt") >"$stdout_path" 2>"$stderr_path"
   local status=$?
@@ -414,6 +424,35 @@ optimized = json.loads((out_dir / "optimized-report.json").read_text())
 baseline_stdout = json.loads((out_dir / "baseline.stdout.json").read_text())
 optimized_stdout = json.loads((out_dir / "optimized.stdout.json").read_text())
 
+def read_optional(path):
+    return path.read_text().strip() if path.exists() else ""
+
+def tool_use_counts(label):
+    log_path_file = out_dir / f"{label}.log-path"
+    if not log_path_file.exists():
+        return {}
+    log_path = Path(log_path_file.read_text().strip())
+    if not log_path.exists():
+        return {}
+    counts = {}
+    for line in log_path.read_text(errors="ignore").splitlines():
+        try:
+            obj = json.loads(line)
+        except Exception:
+            continue
+        message = obj.get("message")
+        if not isinstance(message, dict):
+            continue
+        content = message.get("content")
+        if not isinstance(content, list):
+            continue
+        for item in content:
+            if not isinstance(item, dict) or item.get("type") != "tool_use":
+                continue
+            name = str(item.get("name", "unknown"))
+            counts[name] = counts.get(name, 0) + 1
+    return dict(sorted(counts.items()))
+
 def summarize(report, label):
     metrics = report["metrics"]
     waste = report["estimated_waste_pct"]
@@ -448,12 +487,16 @@ comparison = {
     "claude_version": claude_version,
     "baseline_claude_args": (out_dir / "baseline-claude-args.txt").read_text().strip() if (out_dir / "baseline-claude-args.txt").exists() else "",
     "optimized_claude_args": (out_dir / "optimized-claude-args.txt").read_text().strip() if (out_dir / "optimized-claude-args.txt").exists() else "",
+    "baseline_claude_actual_args": read_optional(out_dir / "baseline-claude-actual-args.txt"),
+    "optimized_claude_actual_args": read_optional(out_dir / "optimized-claude-actual-args.txt"),
     "baseline_exit_status": int((out_dir / "baseline.exit-status").read_text()),
     "optimized_exit_status": int((out_dir / "optimized.exit-status").read_text()),
     "baseline_quality_status": (out_dir / "baseline-quality-status").read_text().strip(),
     "optimized_quality_status": (out_dir / "optimized-quality-status").read_text().strip(),
     "baseline": summarize(baseline, "baseline Claude Code -p"),
     "optimized": summarize(optimized, "plugin-assisted Claude Code -p"),
+    "baseline_tool_use_counts": tool_use_counts("baseline"),
+    "optimized_tool_use_counts": tool_use_counts("optimized"),
     "baseline_claude_usage": usage_summary(baseline_stdout),
     "optimized_claude_usage": usage_summary(optimized_stdout),
     "delta": {

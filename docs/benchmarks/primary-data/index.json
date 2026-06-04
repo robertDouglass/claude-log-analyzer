@@ -6,7 +6,7 @@
   "included_files": "aggregate, manifest, suite status, per-run comparison, task prompt, exit status, and quality-gate output files.",
   "excluded_files": "raw Claude/Codex logs, raw assistant transcript stdout/stderr, plugin zip artifacts, and copied worktrees.",
   "scrubbing": "Absolute local repository, home, and temporary-directory paths are replaced with placeholders.",
-  "file_count": 483,
+  "file_count": 519,
   "files": [
     {
       "path": "docs/benchmarks/primary-data/README.md",
@@ -1092,6 +1092,186 @@
       "path": "docs/benchmarks/primary-data/suites/claude-token-efficient/suite-status.json",
       "bytes": 192,
       "sha256": "bf3295a670daf32d178b2445be2539492b6e555e61c74fd33c4ba337d10ac47a"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/aggregate.json",
+      "bytes": 2841,
+      "sha256": "01ea0a83dfb2060ab01ba2c9296f69f884a3bad3148de6b328f9fc599ec9f0db"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/manifest.json",
+      "bytes": 1018,
+      "sha256": "e291f95a5f13d752343d6e967fb45145c952e6bb4c82289556c4f2eb36683d8f"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-01/baseline-quality-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-01/baseline-quality.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-01/baseline-quality.stdout.txt",
+      "bytes": 179,
+      "sha256": "ecaa4810d8b13910bb352e497b33699f922c9827afca6dcb84020cc735647ce8"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-01/baseline.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-01/comparison.json",
+      "bytes": 3964,
+      "sha256": "6fa0474702be70bfff5683fef3c1bfb3cd24cb9e38957fedd899baf21e91d183"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-01/optimized-quality-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-01/optimized-quality.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-01/optimized-quality.stdout.txt",
+      "bytes": 179,
+      "sha256": "ecaa4810d8b13910bb352e497b33699f922c9827afca6dcb84020cc735647ce8"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-01/optimized.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-01/suite-run.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-01/task-prompt.txt",
+      "bytes": 682,
+      "sha256": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-02/baseline-quality-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-02/baseline-quality.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-02/baseline-quality.stdout.txt",
+      "bytes": 179,
+      "sha256": "ecaa4810d8b13910bb352e497b33699f922c9827afca6dcb84020cc735647ce8"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-02/baseline.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-02/comparison.json",
+      "bytes": 3931,
+      "sha256": "85d9976b0b6cd4678e8a3bebccb934766be76522f3dfe3c8e45a24e15682ce3a"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-02/optimized-quality-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-02/optimized-quality.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-02/optimized-quality.stdout.txt",
+      "bytes": 179,
+      "sha256": "ecaa4810d8b13910bb352e497b33699f922c9827afca6dcb84020cc735647ce8"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-02/optimized.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-02/suite-run.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-02/task-prompt.txt",
+      "bytes": 682,
+      "sha256": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-03/baseline-quality-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-03/baseline-quality.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-03/baseline-quality.stdout.txt",
+      "bytes": 179,
+      "sha256": "ecaa4810d8b13910bb352e497b33699f922c9827afca6dcb84020cc735647ce8"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-03/baseline.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-03/comparison.json",
+      "bytes": 3932,
+      "sha256": "e403be8d239dfe2de61c0fef74b411127ed9fa711e50f9655fe3bdbd63aa5dc3"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-03/optimized-quality-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-03/optimized-quality.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-03/optimized-quality.stdout.txt",
+      "bytes": 179,
+      "sha256": "ecaa4810d8b13910bb352e497b33699f922c9827afca6dcb84020cc735647ce8"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-03/optimized.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-03/suite-run.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/run-03/task-prompt.txt",
+      "bytes": 682,
+      "sha256": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/codegraph-claude/suite-status.json",
+      "bytes": 188,
+      "sha256": "c7e138dd898ff8eb13b08029f686640e96427fa6671dd862ab22d7114eac38d0"
     },
     {
       "path": "docs/benchmarks/primary-data/suites/codex-guided/aggregate.json",

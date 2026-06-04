@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import statistics
 from pathlib import Path
@@ -168,10 +169,13 @@ def published_api_estimate(suite_dir: Path) -> dict | None:
 def publish_aggregates() -> dict[str, dict]:
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     metadata = suite_metadata()
+    only = {item for item in os.environ.get("ONLY", "").split(",") if item}
     published = {}
     diagnostic = {}
     for aggregate_path in sorted(SUITES_DIR.glob("*/aggregate.json")):
         suite_id = aggregate_path.parent.name
+        if only and suite_id not in only:
+            continue
         aggregate = load_json(aggregate_path)
         suite_entry = metadata.get(suite_id, {})
         promotion_policy = suite_entry.get("promotion_policy", "recommendation_evidence")
@@ -232,11 +236,19 @@ def publish_aggregates() -> dict[str, dict]:
 
 def update_results_json(published: dict[str, dict]) -> None:
     results = load_json(RESULTS_JSON)
-    results["repeated_suite_artifacts"] = published["repeated"]
-    results["diagnostic_suite_artifacts"] = published["diagnostic"]
+    repeated = dict(results.get("repeated_suite_artifacts", {}))
+    diagnostic = dict(results.get("diagnostic_suite_artifacts", {}))
+    for suite_id, entry in published["repeated"].items():
+        repeated[suite_id] = entry
+        diagnostic.pop(suite_id, None)
+    for suite_id, entry in published["diagnostic"].items():
+        diagnostic[suite_id] = entry
+        repeated.pop(suite_id, None)
+    results["repeated_suite_artifacts"] = dict(sorted(repeated.items()))
+    results["diagnostic_suite_artifacts"] = dict(sorted(diagnostic.items()))
     results.setdefault("replication_policy", {})
-    results["replication_policy"]["published_aggregate_count"] = len(published["repeated"])
-    results["replication_policy"]["diagnostic_aggregate_count"] = len(published["diagnostic"])
+    results["replication_policy"]["published_aggregate_count"] = len(results["repeated_suite_artifacts"])
+    results["replication_policy"]["diagnostic_aggregate_count"] = len(results["diagnostic_suite_artifacts"])
     RESULTS_JSON.write_text(json.dumps(results, indent=2) + "\n")
 
 

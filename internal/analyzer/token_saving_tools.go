@@ -31,7 +31,7 @@ type ToolID string
 // in any observable way (added/removed tool, field edit, ordering
 // change). NFR-005 in spec.md gates this; a CI test compares the live
 // value to a checked-in golden constant.
-const registryVersion = "phase-a-2026-06-03-codegraph-source-reviewed"
+const registryVersion = "phase-a-2026-06-04-codegraph-negative-benchmark"
 
 // TokenSavingTool is one immutable registry entry. The struct shape is
 // frozen by contracts/token_saving_engine_go_api.md.
@@ -319,7 +319,7 @@ var registry = []TokenSavingTool{
 		PaidPackAllowed:     false,
 		ResearchOnly:        true,
 		InstallPolicy:       "research_only",
-		Notes:               "Source reviewed as @colbymchenry/codegraph; candidate remains research-only until Agent Analyzer has repeated local benchmark proof.",
+		Notes:               "Source reviewed as @colbymchenry/codegraph; 3x diagnostic benchmark increased tokens and cost, so it remains research-only.",
 	},
 	{
 		ID:                  "codebase_memory_mcp",

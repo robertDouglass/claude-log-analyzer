@@ -323,7 +323,7 @@
       ],
       "evidence_counts": {}
     },
-    "registry_version": "phase-a-2026-06-03-codegraph-source-reviewed",
+    "registry_version": "phase-a-2026-06-04-codegraph-negative-benchmark",
     "engine_version": "v0.2-benchmark-narrowed",
     "signals": [
       "no_usage_visibility",

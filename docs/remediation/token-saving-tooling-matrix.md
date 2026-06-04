@@ -37,7 +37,7 @@ These tools reduced published API-rate cost in 3/3 repeated runs on the noisy be
 
 | Tool | Source | Primary category | Evidence state | Product decision |
 | --- | --- | --- | --- | --- |
-| CodeGraph | https://github.com/colbymchenry/codegraph | Pre-indexed code-graph retrieval through MCP | Source reviewed; Agent Analyzer benchmark pending | Keep research-only until `codegraph-claude` has repeated local proof and a separate promotion change. |
+| CodeGraph | https://github.com/colbymchenry/codegraph | Pre-indexed code-graph retrieval through MCP | 3/3 quality-passing diagnostic; `+6,094` estimated tokens and `+54.3%` API-rate cost | Keep research-only; do not emit in report packs from this fixture. |
 
 ## Measurement, Not Reduction
 

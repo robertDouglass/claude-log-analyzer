@@ -176,7 +176,7 @@ func TestRTKDisambiguatesUnrelatedNPMPackage(t *testing.T) {
 	}
 }
 
-func TestCodeGraphResearchOnlyUntilBenchmarkProof(t *testing.T) {
+func TestCodeGraphResearchOnlyAfterNegativeBenchmark(t *testing.T) {
 	tool, ok := GetTool("codegraph")
 	if !ok {
 		t.Fatal("codegraph missing from registry")
@@ -185,15 +185,15 @@ func TestCodeGraphResearchOnlyUntilBenchmarkProof(t *testing.T) {
 		t.Fatalf("codegraph SourceURL = %q", tool.SourceURL)
 	}
 	if tool.InstallPolicy != PolicyResearchOnly || !tool.ResearchOnly {
-		t.Fatalf("codegraph must remain research-only until repeated benchmark proof; got policy=%q research_only=%v",
+		t.Fatalf("codegraph must remain research-only after negative benchmark proof; got policy=%q research_only=%v",
 			tool.InstallPolicy, tool.ResearchOnly)
 	}
 	if tool.FreeReportAllowed || tool.PaidPackAllowed {
 		t.Fatalf("codegraph must not be emitted in report packs before promotion; free=%v paid=%v",
 			tool.FreeReportAllowed, tool.PaidPackAllowed)
 	}
-	if !strings.Contains(strings.ToLower(tool.Notes), "repeated local benchmark proof") {
-		t.Fatalf("codegraph Notes must explain benchmark gate: %q", tool.Notes)
+	if !strings.Contains(strings.ToLower(tool.Notes), "increased tokens and cost") {
+		t.Fatalf("codegraph Notes must explain negative benchmark result: %q", tool.Notes)
 	}
 }
 
@@ -242,7 +242,7 @@ func TestRegistryAllowlistCoverage(t *testing.T) {
 }
 
 func TestRegistryVersionConstant(t *testing.T) {
-	if got, want := RegistryVersion(), "phase-a-2026-06-03-codegraph-source-reviewed"; got != want {
+	if got, want := RegistryVersion(), "phase-a-2026-06-04-codegraph-negative-benchmark"; got != want {
 		t.Errorf("RegistryVersion() = %q, want %q", got, want)
 	}
 }

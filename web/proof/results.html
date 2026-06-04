@@ -247,6 +247,17 @@
               <td><span class="verdict good">Positive here</span></td>
             </tr>
             <tr>
+              <td><a class="text-link" href="https://github.com/colbymchenry/codegraph">CodeGraph</a></td>
+              <td>Pre-indexed code-graph retrieval through MCP</td>
+              <td>3/3</td>
+              <td class="delta-bad">+6,094</td>
+              <td class="delta-bad">+4,046</td>
+              <td class="delta-bad">Claude output +450</td>
+              <td class="delta-bad">+$0.095826</td>
+              <td class="delta-bad">+54.3%</td>
+              <td><span class="verdict neutral">Research-only</span></td>
+            </tr>
+            <tr>
               <td><a class="text-link" href="https://github.com/claudioemmanuel/squeez">Squeez</a></td>
               <td>Explicit shell-output compression</td>
               <td>3/3</td>
@@ -290,14 +301,14 @@
             <tr>
               <td><a class="text-link" href="https://github.com/colbymchenry/codegraph">CodeGraph</a></td>
               <td>Pre-indexed code-graph retrieval through MCP</td>
-              <td>Source reviewed; Agent Analyzer repeated benchmark pending</td>
-              <td><code>ONLY=codegraph-claude REPEATS=3 ./scripts/benchmark-suite.sh</code></td>
+              <td>3/3 quality-passing diagnostic; cost/tokens increased</td>
+              <td>Needs a new fixture or approach with lower full-session cost before promotion</td>
               <td><span class="verdict neutral">Research-only</span></td>
             </tr>
           </tbody>
         </table>
         </div>
-        <p class="command-note">Candidate rows are not recommendations. They stay out of generated artifacts until local Agent Analyzer proof passes and a later reviewed change promotes them.</p>
+        <p class="command-note">Candidate rows are not recommendations. They stay out of generated artifacts until local Agent Analyzer proof shows lower full-session cost and a later reviewed change promotes them.</p>
       </section>
 
       <section class="panel">

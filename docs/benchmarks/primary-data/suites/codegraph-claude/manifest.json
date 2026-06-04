@@ -1,0 +1,19 @@
+{
+  "schema_version": "2026-05-24",
+  "run_name": "codegraph-claude",
+  "harness": "claude",
+  "required_repeats": 3,
+  "fresh_context_contract": "Each repeat invokes one full baseline/optimized harness run. The harness creates fresh detached git worktrees and launches separate Claude/Codex task sessions for baseline and optimized runs.",
+  "task_prompt_file": "$ANALYZER_REPO/docs/benchmarks/fixtures/tasks/owner-breakdown-v3-noisy.txt",
+  "analyzer_repo": "$ANALYZER_REPO",
+  "environment": {
+    "SOURCE_REPO": "<tmp>/agent-analyzer-owner-breakdown-target-v1",
+    "BASE_REF": "benchmark/owner-breakdown-v1-base",
+    "QUALITY_COMMAND": "go test ./...",
+    "OPTIMIZED_GUIDANCE_FILE": "<repo>/docs/benchmarks/fixtures/guidance/codegraph-claude-guidance.txt",
+    "OPTIMIZED_SETUP_COMMAND": "\"$ANALYZER_REPO/scripts/setup-codegraph-benchmark.sh\"",
+    "OPTIMIZED_MCP_CONFIG_FILE": "<repo>/docs/benchmarks/fixtures/mcp/codegraph-npx.json",
+    "AGENT_PLUGIN_ENABLED": "0",
+    "TOOLING_REVIEW_ENABLED": "0"
+  }
+}

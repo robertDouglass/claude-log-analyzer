@@ -641,7 +641,7 @@
     "runner": "scripts/benchmark-repeat.sh",
     "status_note": "All named tool recommendations in the proof suite now have at least three fresh baseline/optimized pairs with passing quality gates. Strong claims still remain scoped to the tested fixture, harness, and token category.",
     "published_aggregate_count": 13,
-    "diagnostic_aggregate_count": 1
+    "diagnostic_aggregate_count": 2
   },
   "repeated_suite_artifacts": {
     "agent-analyzer-guided-v3": {
@@ -986,6 +986,32 @@
     "privacy_boundary": "Sanitized aggregate/comparison recordings are committed; raw logs, raw transcript stdout/stderr, plugin zips, and copied worktrees are excluded."
   },
   "diagnostic_suite_artifacts": {
+    "codegraph-claude": {
+      "artifact": "reports/aggregate-codegraph-claude.json",
+      "quality_passed": true,
+      "completed_repeats": 3,
+      "required_repeats": 3,
+      "estimated_token_delta_mean": 6093.666666666667,
+      "tool_output_token_delta_mean": 4046.3333333333335,
+      "native_cost_delta_mean": 0.08125033333333334,
+      "codex_uncached_plus_output_delta_mean": null,
+      "codex_reasoning_delta_mean": null,
+      "published_api_cost_delta_mean": 0.09582550000000002,
+      "published_api_cost_savings_percent": -54.29360605116293,
+      "published_api_cost_scaled_examples": {
+        "savings_rate": -0.5429360605116293,
+        "savings_percent": -54.29360605116293,
+        "weekly_100_usd": -54.29360605116293,
+        "weekly_500_usd": -271.46803025581465,
+        "monthly_2000_usd": -1085.8721210232586,
+        "monthly_5000_usd": -2714.6803025581466,
+        "monthly_10000_usd": -5429.360605116293,
+        "basis": "Scaled linearly from the suite's optimized-vs-baseline published API-rate delta: savings = comparable baseline spend * savings_percent."
+      },
+      "promotion_policy": "candidate_until_reviewed",
+      "candidate_source_url": "https://github.com/colbymchenry/codegraph",
+      "candidate_issue": "https://github.com/Priivacy-ai/agent-log-analyzer/issues/173"
+    },
     "spec-kitty-agent-analyzer-guided": {
       "artifact": "reports/aggregate-spec-kitty-agent-analyzer-guided.json",
       "quality_passed": false,

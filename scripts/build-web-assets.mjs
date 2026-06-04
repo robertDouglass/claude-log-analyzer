@@ -24,6 +24,9 @@ for (const asset of passthroughAssets) {
 
 await mkdir(join("web-dist", "proof"), { recursive: true });
 await cp(join("web", "proof", "results.json"), join("web-dist", "proof", "results.json"));
+await cp(join("web", "proof", "reports"), join("web-dist", "proof", "reports"), {
+  recursive: true,
+});
 
 const fingerprintAssets = [
   "app.js",

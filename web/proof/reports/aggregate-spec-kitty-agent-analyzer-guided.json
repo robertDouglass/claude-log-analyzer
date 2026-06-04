@@ -2,6 +2,15 @@
   "schema_version": "2026-05-24",
   "suite_id": "spec-kitty-agent-analyzer-guided",
   "source": "scripts/benchmark-repeat.sh aggregate.json",
+  "reproducibility": {
+    "manifest_sha256": "4db17e3bf063787fa977618e84b3960db54a3cd923b51c1d5a3443759a5f9f22",
+    "manifest_schema_version": "2026-05-24",
+    "harness": "claude",
+    "required_repeats": 1,
+    "fresh_context_contract": "Each repeat invokes one full baseline/optimized harness run. The harness creates fresh detached git worktrees and launches separate Claude/Codex task sessions for baseline and optimized runs.",
+    "base_ref": "38abeebf6fab2215fb52a099bfad707a7a503ad7",
+    "quality_command": "test -s benchmark-answer.md && rg -q 'src/charter/compiler.py' benchmark-answer.md && rg -q '_auth_doctor.py' benchmark-answer.md && rg -q 'SonarCloud Quality Gate|Quality Gate' benchmark-answer.md && rg -q '34|thirty-four' benchmark-answer.md && rg -q '3 coverage report|3 .*coverage report|three coverage report' benchmark-answer.md"
+  },
   "required_repeats": 1,
   "completed_repeats": 1,
   "quality_passed": false,
@@ -99,6 +108,9 @@
   "run_dirs": [
     "run-01"
   ],
+  "promotion_policy": "recommendation_evidence",
+  "candidate_source_url": null,
+  "candidate_issue": null,
   "published_api_cost_estimate": {
     "harness": "claude",
     "complete_cost_surface": true,

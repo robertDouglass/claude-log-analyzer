@@ -58,13 +58,30 @@ TOOLING_REVIEW_ENABLED=0 \
 
 The runner writes:
 
-- `manifest.json` with harness, repeat count, task file, and sanitized environment settings
+- `manifest.json` with harness, repeat count, target commit, fixture hashes, tool versions, git dirty status, timestamps, and sanitized environment settings
 - `run-01/comparison.json`
 - `run-02/comparison.json`
 - `run-03/comparison.json`
 - `aggregate.json` with mean, median, min, max, and standard deviation for every numeric delta
 
 Sanitized primary recordings from completed suites are committed under `docs/benchmarks/primary-data/`. That directory keeps the per-run comparisons and quality evidence auditable without publishing raw Claude/Codex logs or copied worktrees.
+
+## Reproducible Publish Checklist
+
+For any future suite run:
+
+```sh
+DRY_RUN=1 ONLY=<suite-id> REPEATS=3 ./scripts/benchmark-suite.sh
+ONLY=<suite-id> REPEATS=3 ./scripts/benchmark-suite.sh
+./scripts/promote-benchmark-primary-data.py <suite-id>
+ONLY=<suite-id> ./scripts/publish-benchmark-results.py
+./scripts/validate-benchmark-artifacts.py
+```
+
+The published aggregate now includes a compact `reproducibility` block with the
+committed primary-data `manifest.json` SHA-256. The validator checks that this
+public hash still matches the committed primary manifest, so a proof page cannot
+silently drift away from its auditable run metadata.
 
 For MCP-backed runs, `benchmark-repeat.sh` generates a per-run MCP config when the config contains `CODE_CHUNKS_COLLECTION_NAME_OVERRIDE`. That keeps claude-context Milvus collections from leaking across repeats.
 

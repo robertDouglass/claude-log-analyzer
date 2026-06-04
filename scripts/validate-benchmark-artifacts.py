@@ -167,6 +167,7 @@ def check_suite_artifacts(errors: list[str]) -> None:
             continue
 
         aggregate = load_json(aggregate_path)
+        manifest = load_json(manifest_path) if manifest_path.exists() else {}
         public = load_json(reports[suite_id])
         suite_entry = metadata.get(suite_id, {})
         promotion_policy = suite_entry.get("promotion_policy", "recommendation_evidence")
@@ -175,6 +176,23 @@ def check_suite_artifacts(errors: list[str]) -> None:
         require(public.get("required_repeats") == aggregate.get("required_repeats"), f"{suite_id} required_repeats mismatch", errors)
         require(public.get("completed_repeats") == aggregate.get("completed_repeats"), f"{suite_id} completed_repeats mismatch", errors)
         require(public.get("promotion_policy", "recommendation_evidence") == promotion_policy, f"{suite_id} promotion_policy mismatch", errors)
+        reproducibility = public.get("reproducibility") or {}
+        manifest_digest = hashlib.sha256(manifest_path.read_bytes()).hexdigest() if manifest_path.exists() else None
+        require(reproducibility.get("manifest_sha256") == manifest_digest, f"{suite_id} public manifest_sha256 mismatch", errors)
+        require(reproducibility.get("harness") == manifest.get("harness"), f"{suite_id} public harness does not match manifest", errors)
+        require(reproducibility.get("required_repeats") == manifest.get("required_repeats"), f"{suite_id} public required_repeats does not match manifest", errors)
+        if manifest.get("completed_repeats") is not None:
+            require(reproducibility.get("completed_repeats") == manifest.get("completed_repeats"), f"{suite_id} public completed_repeats does not match manifest", errors)
+        env = manifest.get("environment") or {}
+        for key, public_key in (
+            ("BENCHMARK_SUITE_SHA256", "suite_file_sha256"),
+            ("BENCHMARK_TASK_PROMPT_SHA256", "task_prompt_sha256"),
+            ("BENCHMARK_GUIDANCE_SHA256", "guidance_sha256"),
+            ("BENCHMARK_PRE_TASK_PROMPT_SHA256", "pre_task_prompt_sha256"),
+            ("BENCHMARK_MCP_CONFIG_SHA256", "mcp_config_sha256"),
+        ):
+            if env.get(key):
+                require(reproducibility.get(public_key) == env.get(key), f"{suite_id} public {public_key} does not match manifest", errors)
 
         run_dirs = aggregate.get("run_dirs", [])
         require(len(run_dirs) == aggregate.get("completed_repeats"), f"{suite_id} run_dirs length does not match completed_repeats", errors)

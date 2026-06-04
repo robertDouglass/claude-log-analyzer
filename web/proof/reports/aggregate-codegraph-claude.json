@@ -2,6 +2,15 @@
   "schema_version": "2026-05-24",
   "suite_id": "codegraph-claude",
   "source": "scripts/benchmark-repeat.sh aggregate.json",
+  "reproducibility": {
+    "manifest_sha256": "e291f95a5f13d752343d6e967fb45145c952e6bb4c82289556c4f2eb36683d8f",
+    "manifest_schema_version": "2026-05-24",
+    "harness": "claude",
+    "required_repeats": 3,
+    "fresh_context_contract": "Each repeat invokes one full baseline/optimized harness run. The harness creates fresh detached git worktrees and launches separate Claude/Codex task sessions for baseline and optimized runs.",
+    "base_ref": "benchmark/owner-breakdown-v1-base",
+    "quality_command": "go test ./..."
+  },
   "required_repeats": 3,
   "completed_repeats": 3,
   "quality_passed": true,

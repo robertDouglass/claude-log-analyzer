@@ -2,6 +2,15 @@
   "schema_version": "2026-05-24",
   "suite_id": "caveman-codex",
   "source": "scripts/benchmark-repeat.sh aggregate.json",
+  "reproducibility": {
+    "manifest_sha256": "f1a689aa53c1b7dcce6ec6615e62a46f23b90b857edf668e9b84d15d8a22dcbb",
+    "manifest_schema_version": "2026-05-24",
+    "harness": "codex",
+    "required_repeats": 3,
+    "fresh_context_contract": "Each repeat invokes one full baseline/optimized harness run. The harness creates fresh detached git worktrees and launches separate Claude/Codex task sessions for baseline and optimized runs.",
+    "base_ref": "b96b8a7f5cc57c4335bc7bc85ec726c836ed0996",
+    "quality_command": "go test ./..."
+  },
   "required_repeats": 3,
   "completed_repeats": 3,
   "quality_passed": true,
@@ -109,6 +118,9 @@
     "run-02",
     "run-03"
   ],
+  "promotion_policy": "recommendation_evidence",
+  "candidate_source_url": null,
+  "candidate_issue": null,
   "published_api_cost_estimate": {
     "harness": "codex",
     "complete_cost_surface": true,

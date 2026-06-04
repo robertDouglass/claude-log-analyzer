@@ -40,6 +40,7 @@ import os
 import shutil
 import subprocess
 import sys
+import hashlib
 from pathlib import Path
 
 analyzer_repo = Path(sys.argv[1]).resolve()
@@ -61,6 +62,9 @@ setup_command = target.get("setup_command", "")
 task_prompt_file = analyzer_repo / target["task_prompt_file"]
 repeat_script = analyzer_repo / "scripts" / "benchmark-repeat.sh"
 out_root.mkdir(parents=True, exist_ok=True)
+
+def sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 if prepare_command and not skip_target_prep:
     prep_env = os.environ.copy()
@@ -86,6 +90,15 @@ def resolve(path_value):
     if path.is_absolute():
         return str(path)
     return str((analyzer_repo / path).resolve())
+
+def optional_sha(path_value):
+    resolved = resolve(path_value)
+    if not resolved:
+        return ""
+    path = Path(resolved)
+    if not path.exists() or not path.is_file():
+        return ""
+    return sha256_file(path)
 
 def require_available(requirement):
     if ":" in requirement:
@@ -134,6 +147,11 @@ for entry in suite["suites"]:
         "SOURCE_REPO": str(source_repo),
         "BASE_REF": base_ref,
         "QUALITY_COMMAND": quality_command,
+        "BENCHMARK_SUITE_FILE": str(suite_file),
+        "BENCHMARK_SUITE_SHA256": sha256_file(suite_file),
+        "BENCHMARK_TARGET_COMMIT": target_commit,
+        "BENCHMARK_TARGET_PREPARE_COMMAND": prepare_command,
+        "BENCHMARK_TASK_PROMPT_SHA256": sha256_file(task_prompt_file),
         "HARNESS": entry["harness"],
         "RUN_NAME": suite_id,
         "REPEATS": repeats,
@@ -143,10 +161,13 @@ for entry in suite["suites"]:
         env["BENCHMARK_SETUP_COMMAND"] = setup_command
     if entry.get("guidance_file"):
         env["OPTIMIZED_GUIDANCE_FILE"] = resolve(entry["guidance_file"])
+        env["BENCHMARK_GUIDANCE_SHA256"] = optional_sha(entry["guidance_file"])
     if entry.get("pre_task_prompt_file"):
         env["OPTIMIZED_PRE_TASK_PROMPT_FILE"] = resolve(entry["pre_task_prompt_file"])
+        env["BENCHMARK_PRE_TASK_PROMPT_SHA256"] = optional_sha(entry["pre_task_prompt_file"])
     if entry.get("mcp_config_file"):
         env["OPTIMIZED_MCP_CONFIG_FILE"] = resolve(entry["mcp_config_file"])
+        env["BENCHMARK_MCP_CONFIG_SHA256"] = optional_sha(entry["mcp_config_file"])
     if entry.get("extra_plugin_dirs"):
         env["OPTIMIZED_EXTRA_PLUGIN_DIRS"] = ":".join(resolve(path) for path in entry["extra_plugin_dirs"])
     env.update(entry.get("env", {}))
@@ -162,6 +183,11 @@ for entry in suite["suites"]:
             "target_commit": target_commit,
             "harness": entry["harness"],
             "repeats": int(repeats),
+            "suite_file_sha256": sha256_file(suite_file),
+            "task_prompt_sha256": sha256_file(task_prompt_file),
+            "guidance_sha256": optional_sha(entry.get("guidance_file", "")),
+            "pre_task_prompt_sha256": optional_sha(entry.get("pre_task_prompt_file", "")),
+            "mcp_config_sha256": optional_sha(entry.get("mcp_config_file", "")),
         }
         (suite_out / "dry-run.json").write_text(json.dumps(status, indent=2) + "\n")
         print(f"[{suite_id}] dry-run ok target={target_commit[:12]}", flush=True)

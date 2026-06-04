@@ -2,6 +2,15 @@
   "schema_version": "2026-05-24",
   "suite_id": "rtk-explicit",
   "source": "scripts/benchmark-repeat.sh aggregate.json",
+  "reproducibility": {
+    "manifest_sha256": "365a460a993b6f1c799f21576660c5ad32ec8eb27aeb5ef472398920052ac0ed",
+    "manifest_schema_version": "2026-05-24",
+    "harness": "claude",
+    "required_repeats": 3,
+    "fresh_context_contract": "Each repeat invokes one full baseline/optimized harness run. The harness creates fresh detached git worktrees and launches separate Claude/Codex task sessions for baseline and optimized runs.",
+    "base_ref": "b96b8a7f5cc57c4335bc7bc85ec726c836ed0996",
+    "quality_command": "go test ./..."
+  },
   "required_repeats": 3,
   "completed_repeats": 3,
   "quality_passed": true,
@@ -101,6 +110,9 @@
     "run-02",
     "run-03"
   ],
+  "promotion_policy": "recommendation_evidence",
+  "candidate_source_url": null,
+  "candidate_issue": null,
   "published_api_cost_estimate": {
     "harness": "claude",
     "complete_cost_surface": true,

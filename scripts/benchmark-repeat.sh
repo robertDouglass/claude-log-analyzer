@@ -13,6 +13,7 @@ Optional:
   REPEATS=3                         default: 3
   OUT_DIR=.data/benchmarks/suites/<name>
   RUN_NAME=<label>                  default: repeat-<timestamp>
+  MANIFEST_ONLY=1                   write manifest.json and exit without launching agents
 
 All other benchmark variables are passed through to the selected harness:
   SOURCE_REPO, BASE_REF, QUALITY_COMMAND, BENCHMARK_SETUP_COMMAND, OPTIMIZED_GUIDANCE_FILE,
@@ -69,8 +70,13 @@ export ANALYZER_REPO
 
 write_manifest() {
   python3 - "$OUT_DIR" "$RUN_NAME" "$HARNESS" "$REPEATS" "$TASK_PROMPT_FILE" "$ANALYZER_REPO" <<'PY'
+import datetime as dt
+import hashlib
 import json
 import os
+import platform
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -82,6 +88,14 @@ task_prompt_file = sys.argv[5]
 analyzer_repo = sys.argv[6]
 
 keys = [
+    "BENCHMARK_SUITE_FILE",
+    "BENCHMARK_SUITE_SHA256",
+    "BENCHMARK_TARGET_COMMIT",
+    "BENCHMARK_TARGET_PREPARE_COMMAND",
+    "BENCHMARK_TASK_PROMPT_SHA256",
+    "BENCHMARK_GUIDANCE_SHA256",
+    "BENCHMARK_PRE_TASK_PROMPT_SHA256",
+    "BENCHMARK_MCP_CONFIG_SHA256",
     "SOURCE_REPO",
     "BASE_REF",
     "QUALITY_COMMAND",
@@ -116,15 +130,84 @@ def clean_value(key, value):
     value = value.replace("/tmp/", "<tmp>/")
     return value
 
+def run(args, cwd=None):
+    try:
+        return subprocess.check_output(args, cwd=cwd, text=True, stderr=subprocess.DEVNULL).strip()
+    except Exception:
+        return ""
+
+def file_sha256(path_value):
+    if not path_value:
+        return ""
+    path = Path(path_value)
+    if not path.exists() or not path.is_file():
+        return ""
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def tool_version(command, *args):
+    resolved = shutil.which(command)
+    if not resolved:
+        return None
+    value = run([command, *args])
+    return value.splitlines()[0] if value else "available"
+
+def git_state(path_value):
+    path = Path(path_value)
+    if not path.exists():
+        return None
+    if run(["git", "-C", str(path), "rev-parse", "--is-inside-work-tree"]) != "true":
+        return None
+    status = run(["git", "-C", str(path), "status", "--porcelain=v1"])
+    return {
+        "commit": run(["git", "-C", str(path), "rev-parse", "HEAD"]),
+        "branch": run(["git", "-C", str(path), "branch", "--show-current"]) or "detached",
+        "dirty": bool(status),
+        "status_entry_count": len([line for line in status.splitlines() if line.strip()]),
+    }
+
 env = {key: clean_value(key, os.environ[key]) for key in keys if key in os.environ}
+path_hash_keys = [
+    "TASK_PROMPT_FILE",
+    "OPTIMIZED_GUIDANCE_FILE",
+    "OPTIMIZED_MCP_CONFIG_FILE",
+    "OPTIMIZED_PRE_TASK_PROMPT_FILE",
+]
 manifest = {
-    "schema_version": "2026-05-24",
+    "schema_version": "2026-06-04",
     "run_name": run_name,
     "harness": harness,
     "required_repeats": repeats,
+    "started_at_utc": dt.datetime.now(dt.UTC).isoformat().replace("+00:00", "Z"),
     "fresh_context_contract": "Each repeat invokes one full baseline/optimized harness run. The harness creates fresh detached git worktrees and launches separate Claude/Codex task sessions for baseline and optimized runs.",
-    "task_prompt_file": task_prompt_file,
-    "analyzer_repo": analyzer_repo,
+    "task_prompt_file": clean_value("TASK_PROMPT_FILE", task_prompt_file),
+    "analyzer_repo": "<repo>",
+    "host": {
+        "platform": platform.platform(),
+        "machine": platform.machine(),
+        "python": platform.python_version(),
+    },
+    "git": {
+        "analyzer": git_state(analyzer_repo),
+        "source": git_state(os.environ.get("SOURCE_REPO", "")),
+    },
+    "tool_versions": {
+        "git": tool_version("git", "--version"),
+        "go": tool_version("go", "version"),
+        "python3": tool_version("python3", "--version"),
+        "node": tool_version("node", "--version"),
+        "npm": tool_version("npm", "--version"),
+        "npx": tool_version("npx", "--version"),
+        "claude": tool_version(os.environ.get("CLAUDE_BIN", "claude"), "--version"),
+        "codex": tool_version(os.environ.get("CODEX_BIN", "codex"), "--version"),
+        "uvx": tool_version("uvx", "--version"),
+        "rtk": tool_version("rtk", "--version"),
+        "grepai": tool_version("grepai", "--version"),
+    },
+    "file_hashes": {
+        key.lower(): file_sha256(os.environ.get(key, ""))
+        for key in path_hash_keys
+        if os.environ.get(key)
+    },
     "environment": env,
 }
 (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
@@ -132,6 +215,11 @@ PY
 }
 
 write_manifest
+
+if [[ "${MANIFEST_ONLY:-0}" == "1" ]]; then
+  echo "Benchmark manifest written to $OUT_DIR/manifest.json"
+  exit 0
+fi
 
 completed=0
 ORIGINAL_OPTIMIZED_MCP_CONFIG_FILE="${OPTIMIZED_MCP_CONFIG_FILE:-}"
@@ -184,6 +272,7 @@ PY
 done
 
 python3 - "$OUT_DIR" "$REPEATS" "$completed" <<'PY'
+import datetime as dt
 import json
 import statistics
 import sys
@@ -252,6 +341,14 @@ aggregate = {
     "run_dirs": [item["run"] for item in comparisons],
 }
 (out_dir / "aggregate.json").write_text(json.dumps(aggregate, indent=2) + "\n")
+
+manifest_path = out_dir / "manifest.json"
+if manifest_path.exists():
+    manifest = json.loads(manifest_path.read_text())
+    manifest["completed_at_utc"] = dt.datetime.now(dt.UTC).isoformat().replace("+00:00", "Z")
+    manifest["completed_repeats"] = completed
+    manifest["failed_repeats"] = failed
+    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 PY
 
 echo "Repeat benchmark suite written to $OUT_DIR"

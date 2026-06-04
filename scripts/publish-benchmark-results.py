@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import sys
@@ -12,6 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUITES_DIR = ROOT / ".data" / "benchmarks" / "suites"
+PRIMARY_SUITES_DIR = ROOT / "docs" / "benchmarks" / "primary-data" / "suites"
 REPORTS_DIR = ROOT / "web" / "proof" / "reports"
 RESULTS_JSON = ROOT / "web" / "proof" / "results.json"
 SUITE_FILES = [
@@ -57,6 +59,57 @@ def quality_passed(aggregate: dict) -> bool:
         if item.get("optimized_exit_status") != 0:
             return False
     return True
+
+
+def file_sha256(path: Path) -> str | None:
+    if not path.exists():
+        return None
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def prune_empty(value):
+    if isinstance(value, dict):
+        pruned = {key: prune_empty(item) for key, item in value.items()}
+        return {key: item for key, item in pruned.items() if item not in (None, "", {}, [])}
+    if isinstance(value, list):
+        return [prune_empty(item) for item in value if item not in (None, "", {}, [])]
+    return value
+
+
+def reproducibility_block(suite_dir: Path, suite_id: str) -> dict | None:
+    primary_manifest_path = PRIMARY_SUITES_DIR / suite_id / "manifest.json"
+    manifest_path = primary_manifest_path if primary_manifest_path.exists() else suite_dir / "manifest.json"
+    if not manifest_path.exists():
+        return None
+    manifest = load_json(manifest_path)
+    env = manifest.get("environment", {})
+    git = manifest.get("git", {})
+    analyzer_git = git.get("analyzer") or {}
+    source_git = git.get("source") or {}
+    return prune_empty({
+        "manifest_sha256": file_sha256(manifest_path),
+        "manifest_schema_version": manifest.get("schema_version"),
+        "harness": manifest.get("harness"),
+        "required_repeats": manifest.get("required_repeats"),
+        "completed_repeats": manifest.get("completed_repeats"),
+        "fresh_context_contract": manifest.get("fresh_context_contract"),
+        "analyzer_commit": analyzer_git.get("commit"),
+        "analyzer_dirty": analyzer_git.get("dirty"),
+        "source_commit": source_git.get("commit") or env.get("BENCHMARK_TARGET_COMMIT"),
+        "source_dirty": source_git.get("dirty"),
+        "base_ref": env.get("BASE_REF"),
+        "quality_command": env.get("QUALITY_COMMAND"),
+        "suite_file_sha256": env.get("BENCHMARK_SUITE_SHA256"),
+        "task_prompt_sha256": env.get("BENCHMARK_TASK_PROMPT_SHA256"),
+        "guidance_sha256": env.get("BENCHMARK_GUIDANCE_SHA256"),
+        "pre_task_prompt_sha256": env.get("BENCHMARK_PRE_TASK_PROMPT_SHA256"),
+        "mcp_config_sha256": env.get("BENCHMARK_MCP_CONFIG_SHA256"),
+        "tool_versions": {
+            key: value
+            for key, value in (manifest.get("tool_versions") or {}).items()
+            if value is not None
+        },
+    })
 
 
 def claude_api_cost(usage: dict) -> float:
@@ -185,6 +238,7 @@ def publish_aggregates() -> dict[str, dict]:
             "schema_version": "2026-05-24",
             "suite_id": suite_id,
             "source": "scripts/benchmark-repeat.sh aggregate.json",
+            "reproducibility": reproducibility_block(aggregate_path.parent, suite_id),
             "required_repeats": aggregate.get("required_repeats"),
             "completed_repeats": aggregate.get("completed_repeats"),
             "quality_passed": quality_passed(aggregate),
@@ -223,10 +277,13 @@ def publish_aggregates() -> dict[str, dict]:
             ).get("scaled_examples") if (
                 public["published_api_cost_estimate"] or {}
             ).get("complete_cost_surface", True) else None,
-            "promotion_policy": promotion_policy,
-            "candidate_source_url": public["candidate_source_url"],
-            "candidate_issue": public["candidate_issue"],
         }
+        if promotion_policy != "recommendation_evidence":
+            entry["promotion_policy"] = promotion_policy
+        if public["candidate_source_url"]:
+            entry["candidate_source_url"] = public["candidate_source_url"]
+        if public["candidate_issue"]:
+            entry["candidate_issue"] = public["candidate_issue"]
         if public["quality_passed"] and public["completed_repeats"] >= 3 and promotion_policy == "recommendation_evidence":
             published[suite_id] = entry
         else:

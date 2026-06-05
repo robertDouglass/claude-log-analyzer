@@ -23,6 +23,8 @@ Optional:
   AGENT_PLUGIN_ENABLED=1
   OPTIMIZED_EXTRA_PLUGIN_DIRS=/path/plugin-a:/path/plugin-b
   OPTIMIZED_SETUP_COMMAND="cp /tmp/CLAUDE.md CLAUDE.md"
+  OPTIMIZED_ENV_FILE=/path/to/optimized-env.sh
+  OPTIMIZED_TEARDOWN_COMMAND="kill $(cat /tmp/proxy.pid)"
   OPTIMIZED_MCP_CONFIG_FILE=/path/to/mcp.json
   OPTIMIZED_PRE_TASK_PROMPT_FILE=/path/to/warmup-prompt.txt
   ANALYZE_ALL_CLAUDE_LOGS=1
@@ -60,6 +62,8 @@ OPTIMIZED_GUIDANCE_FILE="${OPTIMIZED_GUIDANCE_FILE:-}"
 AGENT_PLUGIN_ENABLED="${AGENT_PLUGIN_ENABLED:-1}"
 OPTIMIZED_EXTRA_PLUGIN_DIRS="${OPTIMIZED_EXTRA_PLUGIN_DIRS:-}"
 OPTIMIZED_SETUP_COMMAND="${OPTIMIZED_SETUP_COMMAND:-}"
+OPTIMIZED_ENV_FILE="${OPTIMIZED_ENV_FILE:-}"
+OPTIMIZED_TEARDOWN_COMMAND="${OPTIMIZED_TEARDOWN_COMMAND:-}"
 OPTIMIZED_MCP_CONFIG_FILE="${OPTIMIZED_MCP_CONFIG_FILE:-}"
 OPTIMIZED_PRE_TASK_PROMPT_FILE="${OPTIMIZED_PRE_TASK_PROMPT_FILE:-}"
 TOOLING_REVIEW_ENABLED="${TOOLING_REVIEW_ENABLED:-1}"
@@ -127,6 +131,35 @@ fi
 if [[ -n "$OPTIMIZED_SETUP_COMMAND" ]]; then
   (cd "$OPTIMIZED_WT" && bash -lc "$OPTIMIZED_SETUP_COMMAND") >"$OUT_DIR/optimized-setup.stdout.txt" 2>"$OUT_DIR/optimized-setup.stderr.txt"
 fi
+
+effective_optimized_env_file() {
+  if [[ -n "$OPTIMIZED_ENV_FILE" ]]; then
+    printf '%s\n' "$OPTIMIZED_ENV_FILE"
+  else
+    printf '%s\n' "$OUT_DIR/optimized-env.sh"
+  fi
+}
+
+source_optimized_env_if_needed() {
+  local label="$1"
+  [[ "$label" == "optimized" ]] || return 0
+  local env_file
+  env_file="$(effective_optimized_env_file)"
+  [[ -f "$env_file" ]] || return 0
+  set -a
+  # shellcheck source=/dev/null
+  source "$env_file"
+  set +a
+}
+
+optimized_teardown_ran=0
+run_optimized_teardown() {
+  [[ "$optimized_teardown_ran" == "0" ]] || return 0
+  optimized_teardown_ran=1
+  [[ -n "$OPTIMIZED_TEARDOWN_COMMAND" ]] || return 0
+  (cd "$OPTIMIZED_WT" && bash -lc "$OPTIMIZED_TEARDOWN_COMMAND") >"$OUT_DIR/optimized-teardown.stdout.txt" 2>"$OUT_DIR/optimized-teardown.stderr.txt" || true
+}
+trap run_optimized_teardown EXIT
 
 latest_log_after() {
   local marker="$1"
@@ -218,6 +251,9 @@ $prompt"
   fi
   {
     printf '%s' "$claude_args"
+    if [[ "$label" == "optimized" && -f "$(effective_optimized_env_file)" ]]; then
+      printf ' OPTIMIZED_ENV_FILE=%q' "$(effective_optimized_env_file)"
+    fi
     if [[ "${#plugin_flags[@]}" -gt 0 ]]; then
       printf ' %q' "${plugin_flags[@]}"
     fi
@@ -227,7 +263,7 @@ $prompt"
     printf '\n'
   } >"$OUT_DIR/$label-claude-actual-args.txt"
   set +e
-  (cd "$worktree" && "$CLAUDE_BIN" ${plugin_flags[@]+"${plugin_flags[@]}"} $claude_args ${mcp_flags[@]+"${mcp_flags[@]}"} -p "$prompt") >"$stdout_path" 2>"$stderr_path"
+  (cd "$worktree" && source_optimized_env_if_needed "$label" && "$CLAUDE_BIN" ${plugin_flags[@]+"${plugin_flags[@]}"} $claude_args ${mcp_flags[@]+"${mcp_flags[@]}"} -p "$prompt") >"$stdout_path" 2>"$stderr_path"
   local status=$?
   set -e
   echo "$status" >"$status_path"
@@ -367,7 +403,7 @@ fi
 if [[ "$TOOLING_REVIEW_ENABLED" == "1" ]]; then
   touch "$OUT_DIR/tooling-review.marker"
   set +e
-  (cd "$OPTIMIZED_WT" && "$CLAUDE_BIN" ${tooling_plugin_flags[@]+"${tooling_plugin_flags[@]}"} $OPTIMIZED_CLAUDE_ARGS ${tooling_mcp_flags[@]+"${tooling_mcp_flags[@]}"} -p "Review available benchmark optimization guidance for this run. Do not install optional tools and do not edit files. Return only the approved setup notes for the next run.") >"$OUT_DIR/tooling-review.stdout.json" 2>"$OUT_DIR/tooling-review.stderr.txt"
+  (cd "$OPTIMIZED_WT" && source_optimized_env_if_needed optimized && "$CLAUDE_BIN" ${tooling_plugin_flags[@]+"${tooling_plugin_flags[@]}"} $OPTIMIZED_CLAUDE_ARGS ${tooling_mcp_flags[@]+"${tooling_mcp_flags[@]}"} -p "Review available benchmark optimization guidance for this run. Do not install optional tools and do not edit files. Return only the approved setup notes for the next run.") >"$OUT_DIR/tooling-review.stdout.json" 2>"$OUT_DIR/tooling-review.stderr.txt"
   echo "$?" >"$OUT_DIR/tooling-review.exit-status"
   set -e
 else
@@ -379,7 +415,7 @@ fi
 if [[ -n "$OPTIMIZED_PRE_TASK_PROMPT_FILE" ]]; then
   touch "$OUT_DIR/optimized-pre-task.marker"
   set +e
-  (cd "$OPTIMIZED_WT" && "$CLAUDE_BIN" ${tooling_plugin_flags[@]+"${tooling_plugin_flags[@]}"} $OPTIMIZED_CLAUDE_ARGS ${tooling_mcp_flags[@]+"${tooling_mcp_flags[@]}"} -p "$(cat "$OUT_DIR/optimized-pre-task-prompt.txt")") >"$OUT_DIR/optimized-pre-task.stdout.json" 2>"$OUT_DIR/optimized-pre-task.stderr.txt"
+  (cd "$OPTIMIZED_WT" && source_optimized_env_if_needed optimized && "$CLAUDE_BIN" ${tooling_plugin_flags[@]+"${tooling_plugin_flags[@]}"} $OPTIMIZED_CLAUDE_ARGS ${tooling_mcp_flags[@]+"${tooling_mcp_flags[@]}"} -p "$(cat "$OUT_DIR/optimized-pre-task-prompt.txt")") >"$OUT_DIR/optimized-pre-task.stdout.json" 2>"$OUT_DIR/optimized-pre-task.stderr.txt"
   echo "$?" >"$OUT_DIR/optimized-pre-task.exit-status"
   set -e
   python3 - "$OUT_DIR/optimized-pre-task.stdout.json" <<'PY'
@@ -410,7 +446,9 @@ run_claude_task optimized "$OPTIMIZED_WT" "$agent_plugin_arg" "$optimized_guidan
 run_quality_gate optimized "$OPTIMIZED_WT"
 analyze_log optimized
 
-python3 - "$OUT_DIR" "$FIXED_COMMIT" "$("$CLAUDE_BIN" --version | head -n 1)" <<'PY'
+run_optimized_teardown
+
+python3 - "$OUT_DIR" "$FIXED_COMMIT" "$("$CLAUDE_BIN" --version | head -n 1)" "$(effective_optimized_env_file)" <<'PY'
 import json
 import sys
 from pathlib import Path
@@ -418,6 +456,7 @@ from pathlib import Path
 out_dir = Path(sys.argv[1])
 fixed_commit = sys.argv[2]
 claude_version = sys.argv[3]
+optimized_env_file = Path(sys.argv[4])
 
 baseline = json.loads((out_dir / "baseline-report.json").read_text())
 optimized = json.loads((out_dir / "optimized-report.json").read_text())
@@ -426,6 +465,21 @@ optimized_stdout = json.loads((out_dir / "optimized.stdout.json").read_text())
 
 def read_optional(path):
     return path.read_text().strip() if path.exists() else ""
+
+def env_file_keys(path):
+    if not path.exists():
+        return []
+    keys = []
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[len("export "):]
+        key = line.split("=", 1)[0].strip()
+        if key:
+            keys.append(key)
+    return sorted(set(keys))
 
 def tool_use_counts(label):
     log_path_file = out_dir / f"{label}.log-path"
@@ -489,6 +543,7 @@ comparison = {
     "optimized_claude_args": (out_dir / "optimized-claude-args.txt").read_text().strip() if (out_dir / "optimized-claude-args.txt").exists() else "",
     "baseline_claude_actual_args": read_optional(out_dir / "baseline-claude-actual-args.txt"),
     "optimized_claude_actual_args": read_optional(out_dir / "optimized-claude-actual-args.txt"),
+    "optimized_env_keys": env_file_keys(optimized_env_file),
     "baseline_exit_status": int((out_dir / "baseline.exit-status").read_text()),
     "optimized_exit_status": int((out_dir / "optimized.exit-status").read_text()),
     "baseline_quality_status": (out_dir / "baseline-quality-status").read_text().strip(),

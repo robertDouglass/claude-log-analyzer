@@ -31,7 +31,7 @@ type ToolID string
 // in any observable way (added/removed tool, field edit, ordering
 // change). NFR-005 in spec.md gates this; a CI test compares the live
 // value to a checked-in golden constant.
-const registryVersion = "phase-a-2026-06-05-headroom-diagnostic-benchmark"
+const registryVersion = "phase-a-2026-06-05-headroom-proxy-negative-benchmark"
 
 // TokenSavingTool is one immutable registry entry. The struct shape is
 // frozen by contracts/token_saving_engine_go_api.md.
@@ -253,7 +253,7 @@ var registry = []TokenSavingTool{
 		PaidPackAllowed:     false,
 		ResearchOnly:        true,
 		InstallPolicy:       "research_only",
-		Notes:               "Source reviewed as chopratejas/headroom v0.23.0; 3x diagnostic benchmark was mixed/noisy with one token/cost regression and only small mean savings, so it is not recommended.",
+		Notes:               "Source reviewed as chopratejas/headroom v0.23.0; 3x MCP diagnostic was too small/noisy and 3x proxy diagnostic increased API-rate cost, so it is not recommended.",
 	},
 
 	// ── retrieval ───────────────────────────────────────────────────

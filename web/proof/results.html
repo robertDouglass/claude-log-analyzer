@@ -258,7 +258,7 @@
               <td><span class="verdict neutral">Research-only</span></td>
             </tr>
             <tr>
-              <td><a class="text-link" href="https://github.com/chopratejas/headroom">Headroom</a></td>
+              <td><a class="text-link" href="https://github.com/chopratejas/headroom">Headroom MCP</a></td>
               <td>Explicit MCP output compression</td>
               <td>3/3</td>
               <td class="delta-good">-138</td>
@@ -267,6 +267,17 @@
               <td class="delta-good">-$0.002205</td>
               <td class="delta-good">-1.3%</td>
               <td><span class="verdict neutral">Not recommended</span></td>
+            </tr>
+            <tr>
+              <td><a class="text-link" href="https://github.com/chopratejas/headroom">Headroom proxy</a></td>
+              <td>Anthropic-compatible proxy compression</td>
+              <td>3/3</td>
+              <td class="delta-good">-1,109</td>
+              <td class="delta-good">-759</td>
+              <td class="delta-good">Claude output -233</td>
+              <td class="delta-bad">+$0.084046</td>
+              <td class="delta-bad">+49.7%</td>
+              <td><span class="verdict bad">Not recommended</span></td>
             </tr>
             <tr>
               <td><a class="text-link" href="https://github.com/claudioemmanuel/squeez">Squeez</a></td>
@@ -317,11 +328,18 @@
               <td><span class="verdict neutral">Research-only</span></td>
             </tr>
             <tr>
-              <td><a class="text-link" href="https://github.com/chopratejas/headroom">Headroom</a></td>
+              <td><a class="text-link" href="https://github.com/chopratejas/headroom">Headroom MCP</a></td>
               <td>Explicit MCP output compression</td>
               <td>3/3 quality-passing diagnostic; mixed/noisy savings with one repeat regressing</td>
               <td>Needs stronger repeated proof with consistent full-session cost reduction before promotion</td>
               <td><span class="verdict neutral">Research-only / not recommended</span></td>
+            </tr>
+            <tr>
+              <td><a class="text-link" href="https://github.com/chopratejas/headroom">Headroom proxy</a></td>
+              <td>Anthropic-compatible proxy compression</td>
+              <td>3/3 quality-passing diagnostic; estimated tokens fell but API-rate cost rose 49.7%</td>
+              <td>Needs lower full-session cost, not just lower estimated context, before promotion</td>
+              <td><span class="verdict bad">Research-only / not recommended</span></td>
             </tr>
           </tbody>
         </table>

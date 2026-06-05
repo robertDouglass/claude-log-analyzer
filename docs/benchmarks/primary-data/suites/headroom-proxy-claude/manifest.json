@@ -1,0 +1,65 @@
+{
+  "schema_version": "2026-06-04",
+  "run_name": "headroom-proxy-claude",
+  "harness": "claude",
+  "required_repeats": 3,
+  "started_at_utc": "2026-06-05T09:11:39.156214Z",
+  "fresh_context_contract": "Each repeat invokes one full baseline/optimized harness run. The harness creates fresh detached git worktrees and launches separate Claude/Codex task sessions for baseline and optimized runs.",
+  "task_prompt_file": "<repo>/docs/benchmarks/fixtures/tasks/owner-breakdown-v3-noisy.txt",
+  "analyzer_repo": "<repo>",
+  "host": {
+    "platform": "macOS-15.7.7-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "python": "3.14.5"
+  },
+  "git": {
+    "analyzer": {
+      "commit": "eca00643cb673310285257d14c8ac4fdc94e1b5c",
+      "branch": "main",
+      "dirty": true,
+      "status_entry_count": 11
+    },
+    "source": {
+      "commit": "1116b800a71cc532b37422f9b56b4391b3cf81f9",
+      "branch": "main",
+      "dirty": true,
+      "status_entry_count": 1
+    }
+  },
+  "tool_versions": {
+    "git": "git version 2.52.0",
+    "go": "go version go1.25.4 darwin/arm64",
+    "python3": "Python 3.14.5",
+    "node": "v25.2.1",
+    "npm": "11.6.2",
+    "npx": "11.6.2",
+    "claude": "2.1.165 (Claude Code)",
+    "codex": "codex-cli 0.134.0",
+    "uvx": "uv-tool-uvx 0.5.13 (c456bae5e 2024-12-27)",
+    "rtk": "rtk 0.41.0",
+    "grepai": "available"
+  },
+  "file_hashes": {
+    "task_prompt_file": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5",
+    "optimized_guidance_file": "98fe63209124c65054e2aa801e74fb27860b18670d5e364a9965a92e5d78350d"
+  },
+  "environment": {
+    "BENCHMARK_SUITE_FILE": "<repo>/docs/benchmarks/fixtures/tool-suite.json",
+    "BENCHMARK_SUITE_SHA256": "d9ccfa01560558f1a738503f2fafd4947089460b33ccddc2f67cdc620d5b3aab",
+    "BENCHMARK_TARGET_COMMIT": "1116b800a71cc532b37422f9b56b4391b3cf81f9",
+    "BENCHMARK_TARGET_PREPARE_COMMAND": "\"$ANALYZER_REPO/scripts/prepare-owner-breakdown-benchmark-target.sh\"",
+    "BENCHMARK_TASK_PROMPT_SHA256": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5",
+    "BENCHMARK_GUIDANCE_SHA256": "98fe63209124c65054e2aa801e74fb27860b18670d5e364a9965a92e5d78350d",
+    "SOURCE_REPO": "<tmp>/agent-analyzer-owner-breakdown-target-v1",
+    "BASE_REF": "benchmark/owner-breakdown-v1-base",
+    "QUALITY_COMMAND": "go test ./...",
+    "OPTIMIZED_GUIDANCE_FILE": "<repo>/docs/benchmarks/fixtures/guidance/headroom-proxy-claude-guidance.txt",
+    "OPTIMIZED_SETUP_COMMAND": "\"$ANALYZER_REPO/scripts/setup-headroom-proxy-benchmark.sh\"",
+    "OPTIMIZED_TEARDOWN_COMMAND": "\"$ANALYZER_REPO/scripts/teardown-headroom-proxy-benchmark.sh\"",
+    "AGENT_PLUGIN_ENABLED": "0",
+    "TOOLING_REVIEW_ENABLED": "0"
+  },
+  "completed_at_utc": "2026-06-05T09:16:32.924978Z",
+  "completed_repeats": 3,
+  "failed_repeats": []
+}

@@ -106,6 +106,25 @@
       ]
     },
     {
+      "id": "headroom-proxy-claude",
+      "tool": "Headroom proxy",
+      "harness": "claude",
+      "guidance_file": "docs/benchmarks/fixtures/guidance/headroom-proxy-claude-guidance.txt",
+      "promotion_policy": "candidate_until_reviewed",
+      "candidate_source_url": "https://github.com/chopratejas/headroom",
+      "candidate_issue": "https://github.com/Priivacy-ai/agent-log-analyzer/issues/174",
+      "env": {
+        "AGENT_PLUGIN_ENABLED": "0",
+        "TOOLING_REVIEW_ENABLED": "0",
+        "OPTIMIZED_SETUP_COMMAND": "\"$ANALYZER_REPO/scripts/setup-headroom-proxy-benchmark.sh\"",
+        "OPTIMIZED_TEARDOWN_COMMAND": "\"$ANALYZER_REPO/scripts/teardown-headroom-proxy-benchmark.sh\""
+      },
+      "requires": [
+        "bash",
+        "curl"
+      ]
+    },
+    {
       "id": "claude-token-efficient",
       "tool": "claude-token-efficient",
       "harness": "claude",

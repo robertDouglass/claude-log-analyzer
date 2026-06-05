@@ -1,0 +1,12 @@
+Headroom proxy is already active for this optimized run.
+
+Rules:
+- Preserve task completion quality over token reduction.
+- Use normal file reads, focused grep, and targeted tests for source inspection.
+- Do not install Headroom, run `headroom wrap`, run `headroom mcp install`, or edit global agent configuration.
+- Do not add extra compression tools; this benchmark isolates proxy-mode behavior.
+- During debugging, rerun targeted package tests first:
+  `go test ./internal/events ./internal/report`
+- For final verification, run the full suite quietly:
+  `go test ./... >/tmp/go-test.log && echo "go test ./... passed" || { grep -A3 -B2 -E "FAIL|--- FAIL" /tmp/go-test.log; exit 1; }`
+- Do not use web search.

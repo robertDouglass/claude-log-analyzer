@@ -635,7 +635,7 @@
       "promotion_gate": "Needs a new fixture or approach with lower full-session cost before promotion."
     },
     {
-      "candidate": "Headroom",
+      "candidate": "Headroom MCP",
       "source": "https://github.com/chopratejas/headroom",
       "primary_token_category": "tool_output_tokens_via_explicit_mcp_compression",
       "evidence_state": "source_reviewed_3x_diagnostic_mixed",
@@ -643,6 +643,16 @@
       "promotion_policy": "candidate_until_reviewed",
       "current_product_status": "research_only_not_recommended",
       "promotion_gate": "Needs stronger repeated proof with consistent full-session cost reduction before promotion."
+    },
+    {
+      "candidate": "Headroom proxy",
+      "source": "https://github.com/chopratejas/headroom",
+      "primary_token_category": "input_context_tokens_via_anthropic_proxy_compression",
+      "evidence_state": "source_reviewed_3x_proxy_diagnostic_negative_cost",
+      "suite_id": "headroom-proxy-claude",
+      "promotion_policy": "candidate_until_reviewed",
+      "current_product_status": "research_only_not_recommended",
+      "promotion_gate": "Needs lower full-session cost, not just lower estimated context, before promotion."
     }
   ],
   "replication_policy": {
@@ -651,7 +661,7 @@
     "runner": "scripts/benchmark-repeat.sh",
     "status_note": "All named tool recommendations in the proof suite now have at least three fresh baseline/optimized pairs with passing quality gates. Strong claims still remain scoped to the tested fixture, harness, and token category.",
     "published_aggregate_count": 13,
-    "diagnostic_aggregate_count": 3
+    "diagnostic_aggregate_count": 4
   },
   "repeated_suite_artifacts": {
     "agent-analyzer-guided-v3": {
@@ -1042,6 +1052,32 @@
         "monthly_2000_usd": 25.296267633065906,
         "monthly_5000_usd": 63.240669082664766,
         "monthly_10000_usd": 126.48133816532953,
+        "basis": "Scaled linearly from the suite's optimized-vs-baseline published API-rate delta: savings = comparable baseline spend * savings_percent."
+      },
+      "promotion_policy": "candidate_until_reviewed",
+      "candidate_source_url": "https://github.com/chopratejas/headroom",
+      "candidate_issue": "https://github.com/Priivacy-ai/agent-log-analyzer/issues/174"
+    },
+    "headroom-proxy-claude": {
+      "artifact": "reports/aggregate-headroom-proxy-claude.json",
+      "quality_passed": true,
+      "completed_repeats": 3,
+      "required_repeats": 3,
+      "estimated_token_delta_mean": -1109.0,
+      "tool_output_token_delta_mean": -759.3333333333334,
+      "native_cost_delta_mean": 0.0641405,
+      "codex_uncached_plus_output_delta_mean": null,
+      "codex_reasoning_delta_mean": null,
+      "published_api_cost_delta_mean": 0.084046,
+      "published_api_cost_savings_percent": -49.705155447630865,
+      "published_api_cost_scaled_examples": {
+        "savings_rate": -0.49705155447630867,
+        "savings_percent": -49.705155447630865,
+        "weekly_100_usd": -49.705155447630865,
+        "weekly_500_usd": -248.52577723815432,
+        "monthly_2000_usd": -994.1031089526173,
+        "monthly_5000_usd": -2485.2577723815434,
+        "monthly_10000_usd": -4970.515544763087,
         "basis": "Scaled linearly from the suite's optimized-vs-baseline published API-rate delta: savings = comparable baseline spend * savings_percent."
       },
       "promotion_policy": "candidate_until_reviewed",

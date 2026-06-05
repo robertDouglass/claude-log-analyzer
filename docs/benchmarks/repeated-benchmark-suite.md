@@ -39,6 +39,7 @@ Run candidate suites such as CodeGraph or Headroom:
 ```sh
 ONLY=codegraph-claude REPEATS=3 ./scripts/benchmark-suite.sh
 ONLY=headroom-claude REPEATS=3 ./scripts/benchmark-suite.sh
+ONLY=headroom-proxy-claude REPEATS=3 ./scripts/benchmark-suite.sh
 ```
 
 Run a single harness directly:
@@ -99,7 +100,7 @@ The validator checks that repeated verdicts have at least three quality-passing 
 Candidate suites can set `promotion_policy: "candidate_until_reviewed"`.
 Those suites may publish diagnostic aggregate artifacts, but they do not enter
 the repeated recommendation bucket until a later reviewed change removes the
-candidate gate. CodeGraph and Headroom use this gate.
+candidate gate. CodeGraph and both Headroom suites use this gate.
 
 ## Fixture Contract
 
@@ -148,7 +149,8 @@ All rows below passed the quality gate in all three repeats.
 | Semble | Claude Code | `-16,301` | `-16,060` | Claude output `-480` | native `-$0.089147`; API estimate `-$0.114194` | `-41.5%` | Positive |
 | Squeez | Claude Code | `-8,471` | `-8,917` | Claude output `+73` | native `-$0.014049`; API estimate `-$0.028224` | `-12.1%` | Removed: conflicts with Spec Kitty |
 | CodeGraph | Claude Code | `+6,094` | `+4,046` | Claude output `+450` | native `+$0.081250`; API estimate `+$0.095826` | `+54.3%` | Research-only diagnostic |
-| Headroom | Claude Code | `-138` | `-266` | Claude output `-29` | native `-$0.003130`; API estimate `-$0.002205` | `-1.3%` | Research-only diagnostic |
+| Headroom MCP | Claude Code | `-138` | `-266` | Claude output `-29` | native `-$0.003130`; API estimate `-$0.002205` | `-1.3%` | Research-only diagnostic |
+| Headroom proxy | Claude Code | `-1,109` | `-759` | Claude output `-233` | native `+$0.064141`; API estimate `+$0.084046` | `+49.7%` | Not recommended |
 | Agent Analyzer text guidance | Codex | `-14,520` | `-14,527` | output `-483`; reasoning `-45`; uncached+output `-24,369` | API estimate `-$0.062392` | `-31.8%` | Positive here |
 | Caveman | Claude Code | `+4,355` | `+4,868` | Claude output `-370` | native `+$0.009919`; API estimate `+$0.009211` | `+3.9%` | Removed |
 | Caveman | Codex | `-9,210` | `-9,109` | output `-172`; reasoning `-2`; uncached+output `-4,739` | API estimate `-$0.033986` | `-18.3%` | Harness-specific |
@@ -162,6 +164,14 @@ Headroom has a pinned candidate suite (`headroom-claude`) and passed quality
 3/3, but the result does not prove a recommendation-grade improvement: one
 repeat regressed, the mean estimated-token delta was only `-138`, and the
 published API-rate savings mean was only `1.3%`. It remains research-only/not
+recommended and must not be emitted as an Agent Analyzer recommendation from
+this result.
+
+Headroom proxy has a separate pinned candidate suite (`headroom-proxy-claude`)
+using `ANTHROPIC_BASE_URL` only on the optimized side. It passed quality 3/3
+and reduced analyzer-estimated tokens, tool-output tokens, and Claude output
+tokens, but increased native Claude Code cost in all three repeats and raised
+the published API-rate estimate by `49.7%`. It remains research-only/not
 recommended and must not be emitted as an Agent Analyzer recommendation from
 this result.
 

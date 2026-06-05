@@ -1,0 +1,188 @@
+{
+  "schema_version": "2026-05-24",
+  "suite_id": "headroom-proxy-claude",
+  "source": "scripts/benchmark-repeat.sh aggregate.json",
+  "reproducibility": {
+    "manifest_sha256": "db7bc4fc88eeb82a6e72ca3d1fe04fca678e83deb73d39614c005d058aa2b9c0",
+    "manifest_schema_version": "2026-06-04",
+    "harness": "claude",
+    "required_repeats": 3,
+    "completed_repeats": 3,
+    "fresh_context_contract": "Each repeat invokes one full baseline/optimized harness run. The harness creates fresh detached git worktrees and launches separate Claude/Codex task sessions for baseline and optimized runs.",
+    "analyzer_commit": "eca00643cb673310285257d14c8ac4fdc94e1b5c",
+    "analyzer_dirty": true,
+    "source_commit": "1116b800a71cc532b37422f9b56b4391b3cf81f9",
+    "source_dirty": true,
+    "base_ref": "benchmark/owner-breakdown-v1-base",
+    "quality_command": "go test ./...",
+    "suite_file_sha256": "d9ccfa01560558f1a738503f2fafd4947089460b33ccddc2f67cdc620d5b3aab",
+    "task_prompt_sha256": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5",
+    "guidance_sha256": "98fe63209124c65054e2aa801e74fb27860b18670d5e364a9965a92e5d78350d",
+    "tool_versions": {
+      "git": "git version 2.52.0",
+      "go": "go version go1.25.4 darwin/arm64",
+      "python3": "Python 3.14.5",
+      "node": "v25.2.1",
+      "npm": "11.6.2",
+      "npx": "11.6.2",
+      "claude": "2.1.165 (Claude Code)",
+      "codex": "codex-cli 0.134.0",
+      "uvx": "uv-tool-uvx 0.5.13 (c456bae5e 2024-12-27)",
+      "rtk": "rtk 0.41.0",
+      "grepai": "available"
+    }
+  },
+  "required_repeats": 3,
+  "completed_repeats": 3,
+  "quality_passed": true,
+  "failed_repeats": [],
+  "delta_stats": {
+    "avoidable_waste_high_points": {
+      "n": 3,
+      "mean": -0.6666666666666666,
+      "median": -1,
+      "min": -1,
+      "max": 0,
+      "stdev": 0.5773502691896257
+    },
+    "avoidable_waste_low_points": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "stdev": 0.0
+    },
+    "claude_cache_creation_input_tokens": {
+      "n": 3,
+      "mean": 11850.0,
+      "median": 3685,
+      "min": 3618,
+      "max": 28247,
+      "stdev": 14200.258061035369
+    },
+    "claude_cache_read_input_tokens": {
+      "n": 3,
+      "mean": 54806.666666666664,
+      "median": 48647,
+      "min": 44240,
+      "max": 71533,
+      "stdev": 14652.06751053698
+    },
+    "claude_output_tokens": {
+      "n": 3,
+      "mean": -233.0,
+      "median": -305,
+      "min": -333,
+      "max": -61,
+      "stdev": 149.61283367412034
+    },
+    "claude_total_cost_usd": {
+      "n": 3,
+      "mean": 0.0641405,
+      "median": 0.03680439999999996,
+      "min": 0.02926975000000001,
+      "max": 0.12634735000000005,
+      "stdev": 0.054004276477400415
+    },
+    "context_growth_events": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "stdev": 0.0
+    },
+    "estimated_tokens": {
+      "n": 3,
+      "mean": -1109.0,
+      "median": -1315,
+      "min": -1497,
+      "max": -515,
+      "stdev": 522.4059724007757
+    },
+    "failed_commands": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "stdev": 0.0
+    },
+    "rereads": {
+      "n": 3,
+      "mean": -0.3333333333333333,
+      "median": 0,
+      "min": -1,
+      "max": 0,
+      "stdev": 0.5773502691896257
+    },
+    "tool_output_tokens": {
+      "n": 3,
+      "mean": -759.3333333333334,
+      "median": -851,
+      "min": -1104,
+      "max": -323,
+      "stdev": 398.4875573130651
+    }
+  },
+  "run_dirs": [
+    "run-01",
+    "run-02",
+    "run-03"
+  ],
+  "promotion_policy": "candidate_until_reviewed",
+  "candidate_source_url": "https://github.com/chopratejas/headroom",
+  "candidate_issue": "https://github.com/Priivacy-ai/agent-log-analyzer/issues/174",
+  "published_api_cost_estimate": {
+    "harness": "claude",
+    "complete_cost_surface": true,
+    "multi_session_runs_not_in_stdout_usage": [],
+    "rates": {
+      "model_assumption": "Claude Sonnet 4.6",
+      "input_tokens_per_mtok_usd": 3.0,
+      "cache_creation_input_tokens_per_mtok_usd": 6.0,
+      "cache_read_input_tokens_per_mtok_usd": 0.3,
+      "output_tokens_per_mtok_usd": 15.0
+    },
+    "baseline_mean_usd": 0.1690891,
+    "optimized_mean_usd": 0.2531351,
+    "delta_mean_usd": 0.084046,
+    "savings_rate": -0.49705155447630867,
+    "savings_percent": -49.705155447630865,
+    "scaled_examples": {
+      "savings_rate": -0.49705155447630867,
+      "savings_percent": -49.705155447630865,
+      "weekly_100_usd": -49.705155447630865,
+      "weekly_500_usd": -248.52577723815432,
+      "monthly_2000_usd": -994.1031089526173,
+      "monthly_5000_usd": -2485.2577723815434,
+      "monthly_10000_usd": -4970.515544763087,
+      "basis": "Scaled linearly from the suite's optimized-vs-baseline published API-rate delta: savings = comparable baseline spend * savings_percent."
+    },
+    "delta_min_usd": 0.030804000000000026,
+    "delta_max_usd": 0.1831611,
+    "runs": [
+      {
+        "run": "run-01",
+        "baseline_usd": 0.1626309,
+        "optimized_usd": 0.345792,
+        "delta_usd": 0.1831611
+      },
+      {
+        "run": "run-02",
+        "baseline_usd": 0.1677162,
+        "optimized_usd": 0.20588909999999996,
+        "delta_usd": 0.038172899999999954
+      },
+      {
+        "run": "run-03",
+        "baseline_usd": 0.1769202,
+        "optimized_usd": 0.20772420000000003,
+        "delta_usd": 0.030804000000000026
+      }
+    ],
+    "note": "Uses exposed Claude Code aggregate usage fields repriced at published Claude Sonnet 4.6 API rates. Claude Code native billing can differ because raw runs also report internal model usage."
+  },
+  "privacy_boundary": "Raw Claude/Codex logs, raw prompts, local paths, and secrets are not included in public aggregate artifacts."
+}

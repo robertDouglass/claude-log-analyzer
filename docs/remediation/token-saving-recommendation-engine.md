@@ -68,8 +68,8 @@ with `distill` and `token_optimizer_mcp` as research-only candidates.
 Responds to `shell_output_bloat`. Anchored by `RTK (Rust Token Killer,
 rtk-ai/rtk)` (rank 1, waiver-gated), with `leanctx` and `headroom` as
 research-only entries. Headroom has a verified source URL and a 3x diagnostic
-suite, but remains not recommended because the result was mixed/noisy and too
-small to prove reliable savings. Squeez is intentionally not in the
+suite, but remains not recommended because the MCP result was mixed/noisy and
+the proxy result increased full-session API-rate cost. Squeez is intentionally not in the
 recommendable registry because it conflicts with Spec Kitty workflows.
 
 **`retrieval`** — Code-aware retrieval that replaces broad file reads.
@@ -117,7 +117,7 @@ recommendations leave them empty.
 Adding, removing, or modifying any registry entry must bump
 `RegistryVersion()` — a CI test compares the live value to a checked-in
 golden constant and fails fast otherwise. The current benchmark-narrowed
-registry is `"phase-a-2026-06-05-headroom-diagnostic-benchmark"`; see NFR-005.
+registry is `"phase-a-2026-06-05-headroom-proxy-negative-benchmark"`; see NFR-005.
 
 For URL verification, see `research.md` §"Per-tool research notes". The
 short version: Phase A does **not** invent or guess source URLs. Every
@@ -425,8 +425,8 @@ Spec FR-010 describes a fallback chain for `shell_output_bloat`: when
 RTK is `active_high` (and bloat persists) or `rejected_medium`, the
 engine should recommend `leanctx` (and optionally `headroom`). Phase A
 ships `leanctx` and `headroom` as `research_only`; Headroom now has a
-verified public source URL but still lacks recommendation-grade benchmark
-proof. Phase A's policy is to never recommend research-only entries by
+verified public source URL but the proxy benchmark increased full-session cost,
+so it still lacks recommendation-grade proof. Phase A's policy is to never recommend research-only entries by
 default. As a result, when RTK is active or rejected:
 
 - `pickPrimary` walks past RTK (via the skip-and-continue branches),

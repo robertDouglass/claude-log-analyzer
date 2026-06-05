@@ -214,7 +214,7 @@ func TestHeadroomResearchOnlyAfterDiagnosticBenchmark(t *testing.T) {
 			tool.FreeReportAllowed, tool.PaidPackAllowed)
 	}
 	notes := strings.ToLower(tool.Notes)
-	if !strings.Contains(notes, "mixed/noisy") || !strings.Contains(notes, "not recommended") {
+	if !strings.Contains(notes, "proxy diagnostic increased") || !strings.Contains(notes, "not recommended") {
 		t.Fatalf("headroom Notes must explain mixed diagnostic result: %q", tool.Notes)
 	}
 }
@@ -264,7 +264,7 @@ func TestRegistryAllowlistCoverage(t *testing.T) {
 }
 
 func TestRegistryVersionConstant(t *testing.T) {
-	if got, want := RegistryVersion(), "phase-a-2026-06-05-headroom-diagnostic-benchmark"; got != want {
+	if got, want := RegistryVersion(), "phase-a-2026-06-05-headroom-proxy-negative-benchmark"; got != want {
 		t.Errorf("RegistryVersion() = %q, want %q", got, want)
 	}
 }

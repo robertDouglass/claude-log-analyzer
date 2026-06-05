@@ -38,6 +38,7 @@ These tools reduced published API-rate cost in 3/3 repeated runs on the noisy be
 | Tool | Source | Primary category | Evidence state | Product decision |
 | --- | --- | --- | --- | --- |
 | CodeGraph | https://github.com/colbymchenry/codegraph | Pre-indexed code-graph retrieval through MCP | 3/3 quality-passing diagnostic; `+6,094` estimated tokens and `+54.3%` API-rate cost | Keep research-only; do not emit in report packs from this fixture. |
+| Headroom | https://github.com/chopratejas/headroom | Explicit MCP/proxy output compression | 3/3 quality-passing diagnostic; `-138` estimated tokens and `-1.3%` API-rate cost, with one repeat regressing | Keep research-only/not recommended; do not emit in report packs from this fixture. |
 
 ## Measurement, Not Reduction
 

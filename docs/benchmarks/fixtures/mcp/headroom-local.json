@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "headroom": {
+      "command": "$ANALYZER_REPO/.data/benchmarks/external-tools/headroom-venv/bin/headroom",
+      "args": [
+        "mcp",
+        "serve"
+      ],
+      "env": {
+        "HEADROOM_TELEMETRY": "off",
+        "HEADROOM_TELEMETRY_WARN": "off",
+        "HEADROOM_WORKSPACE_DIR": "__BENCHMARK_RUN_DIR__/headroom-workspace",
+        "HEADROOM_CONFIG_DIR": "__BENCHMARK_RUN_DIR__/headroom-config",
+        "HEADROOM_MCP_READ": "off"
+      }
+    }
+  }
+}

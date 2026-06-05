@@ -1,0 +1,14 @@
+Use Headroom MCP as the only output-compression mechanism.
+
+Rules:
+- Preserve task completion quality over token reduction.
+- Use normal file reads, focused grep, and targeted tests for source inspection.
+- Before reasoning over long command output, test output, file listings, or pasted search results, call `mcp__headroom__headroom_compress` on that content and reason from the compressed result.
+- If the compressed result omits a detail needed for a correct edit, retrieve or rerun only the smallest focused command needed for that detail.
+- Do not use broad Glob, find, tree, repository overview agents, or broad grep before a focused source question requires it.
+- Do not use Headroom proxy, wrap mode, memory sync, or global install commands.
+- During debugging, rerun targeted package tests first:
+  `go test ./internal/events ./internal/report`
+- For final verification, run the full suite quietly:
+  `go test ./... >/tmp/go-test.log && echo "go test ./... passed" || { grep -A3 -B2 -E "FAIL|--- FAIL" /tmp/go-test.log; exit 1; }`
+- Do not use web search.

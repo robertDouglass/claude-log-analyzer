@@ -197,6 +197,28 @@ func TestCodeGraphResearchOnlyAfterNegativeBenchmark(t *testing.T) {
 	}
 }
 
+func TestHeadroomResearchOnlyAfterDiagnosticBenchmark(t *testing.T) {
+	tool, ok := GetTool("headroom")
+	if !ok {
+		t.Fatal("headroom missing from registry")
+	}
+	if tool.SourceURL != "https://github.com/chopratejas/headroom" {
+		t.Fatalf("headroom SourceURL = %q", tool.SourceURL)
+	}
+	if tool.InstallPolicy != PolicyResearchOnly || !tool.ResearchOnly {
+		t.Fatalf("headroom must remain research-only after mixed diagnostic proof; got policy=%q research_only=%v",
+			tool.InstallPolicy, tool.ResearchOnly)
+	}
+	if tool.FreeReportAllowed || tool.PaidPackAllowed {
+		t.Fatalf("headroom must not be emitted in report packs before promotion; free=%v paid=%v",
+			tool.FreeReportAllowed, tool.PaidPackAllowed)
+	}
+	notes := strings.ToLower(tool.Notes)
+	if !strings.Contains(notes, "mixed/noisy") || !strings.Contains(notes, "not recommended") {
+		t.Fatalf("headroom Notes must explain mixed diagnostic result: %q", tool.Notes)
+	}
+}
+
 func TestRegistryAllowlistCoverage(t *testing.T) {
 	// Step 1: brief allowlist has no internal duplicates.
 	seenBrief := make(map[ToolID]int, len(briefAllowlist))
@@ -242,7 +264,7 @@ func TestRegistryAllowlistCoverage(t *testing.T) {
 }
 
 func TestRegistryVersionConstant(t *testing.T) {
-	if got, want := RegistryVersion(), "phase-a-2026-06-04-codegraph-negative-benchmark"; got != want {
+	if got, want := RegistryVersion(), "phase-a-2026-06-05-headroom-diagnostic-benchmark"; got != want {
 		t.Errorf("RegistryVersion() = %q, want %q", got, want)
 	}
 }

@@ -13,6 +13,7 @@ This note records the additional tools and approaches added after the first benc
 | Squeez | Explicit shell-output compression via `squeez wrap` | Tool-output/input-context | Removed from recommendations: repeated task runs saved tool-output/cost, but it conflicts with Spec Kitty workflows. |
 | RTK | Explicit shell-output compression via `rtk` | Tool-output/input-context | Conditional: useful for noisy shell output; keep global hooks waiver-gated. |
 | CodeGraph | Local CodeGraph MCP server with pre-indexed symbol/call graph queries | Input/context through code-aware retrieval | Research-only diagnostic. Source/package reviewed and 3x benchmarked, but this fixture showed higher token/cost use. |
+| Headroom | Local MCP/proxy compression and retrieval toolkit; benchmark used explicit MCP compression only | Tool-output/input-context | Research-only diagnostic. Source/package reviewed and 3x benchmarked, but this fixture showed mixed, very small savings with one repeat regressing. |
 
 ## Smoke Results
 
@@ -23,6 +24,7 @@ Smoke tests remain useful only as mechanism checks:
 - Squeez compressed noisy failing Go test output from 7,088 bytes to 1,603 bytes while preserving failure details.
 - RTK compressed the same noisy failing Go test output from 7,088 bytes to 963 bytes.
 - CodeGraph package smoke review verified `@colbymchenry/codegraph@0.9.9`, MIT license, pinned npx launch, local `.codegraph/` index setup, MCP command shape `codegraph serve --mcp`, and uninstall/uninit boundaries.
+- Headroom package smoke review verified `headroom-ai[proxy,code]==0.23.0`, Apache-2.0 license, Python 3.10-3.13 install requirement, explicit `headroom mcp serve` launch, telemetry opt-out with `HEADROOM_TELEMETRY=off`, and no global `headroom mcp install` use in the benchmark.
 
 Smoke success did not automatically predict task-level savings. The repeated task benchmark below is the product evidence.
 
@@ -37,6 +39,7 @@ All rows passed `go test ./...` in all three repeats.
 | Squeez | 3/3 | `-8,471` | `-8,917` | Claude output `+73` | native `-$0.014049`; API estimate `-$0.028224` | Removed: conflicts with Spec Kitty |
 | RTK | 3/3 | `-12,446` | `-12,716` | Claude output `+114` | native `-$0.031479`; API estimate `-$0.044316` | Conditional |
 | CodeGraph | 3/3 | `+6,094` | `+4,046` | Claude output `+450` | native `+$0.081250`; API estimate `+$0.095826` | Research-only; quality passed, but cost/tokens got worse. |
+| Headroom | 3/3 | `-138` | `-266` | Claude output `-29` | native `-$0.003130`; API estimate `-$0.002205` | Research-only; quality passed, but effect was too small/noisy and one repeat regressed. |
 
 ## Product Actions
 
@@ -46,6 +49,7 @@ All rows passed `go test ./...` in all three repeats.
 - Do not add Probe as a default recommendation for this task family.
 - Keep smoke-test claims separate from task benchmark claims.
 - Keep CodeGraph research-only. The `codegraph-claude` suite passed quality 3/3 but increased cost and token use, so there is no promotion change.
+- Keep Headroom research-only/not recommended. The `headroom-claude` suite passed quality 3/3, but the result was mixed (`+1,432`, `-896`, `-950` estimated-token deltas) and only `1.3%` mean API-rate savings, so it does not prove a reliable improvement.
 
 ## Artifacts
 
@@ -54,3 +58,4 @@ All rows passed `go test ./...` in all three repeats.
 - `web/proof/reports/aggregate-squeez.json`
 - `web/proof/reports/aggregate-rtk-explicit.json`
 - CodeGraph diagnostic artifact: `web/proof/reports/aggregate-codegraph-claude.json`
+- Headroom diagnostic artifact: `web/proof/reports/aggregate-headroom-claude.json`

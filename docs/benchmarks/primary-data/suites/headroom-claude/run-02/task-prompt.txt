@@ -1,0 +1,11 @@
+Finish the owner-breakdown feature in this Go repository and make the failing tests pass.
+
+Scope:
+- CSV parsing should normalize owner names the same way service names are normalized; blank owners become "unassigned".
+- Report aggregation should group owners by event owner, not by service.
+- Markdown rendering should include an "Owners" table with the same numeric columns as the services table.
+- Preserve the existing JSON field names and public structs.
+- Add or adjust one regression test if the existing coverage does not directly prove blank-owner normalization.
+- Run go test ./... before finishing.
+
+Summarize the root cause, the changed files, and the final test result.

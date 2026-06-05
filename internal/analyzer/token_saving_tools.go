@@ -31,7 +31,7 @@ type ToolID string
 // in any observable way (added/removed tool, field edit, ordering
 // change). NFR-005 in spec.md gates this; a CI test compares the live
 // value to a checked-in golden constant.
-const registryVersion = "phase-a-2026-06-04-codegraph-negative-benchmark"
+const registryVersion = "phase-a-2026-06-05-headroom-diagnostic-benchmark"
 
 // TokenSavingTool is one immutable registry entry. The struct shape is
 // frozen by contracts/token_saving_engine_go_api.md.
@@ -241,19 +241,19 @@ var registry = []TokenSavingTool{
 	},
 	{
 		ID:                  "headroom",
-		DisplayName:         "headroom",
-		SourceURL:           "",
+		DisplayName:         "Headroom",
+		SourceURL:           "https://github.com/chopratejas/headroom",
 		Category:            "shell",
 		RecommendationClass: "shell_output_reducer",
 		ClassRank:           3,
 		DetectorSources:     []EvidenceSource{"cli_presence", "hook_configured"},
-		InstallRisk:         "low",
+		InstallRisk:         "medium",
 		DataMovementRisk:    "low",
 		FreeReportAllowed:   false,
 		PaidPackAllowed:     false,
 		ResearchOnly:        true,
 		InstallPolicy:       "research_only",
-		Notes:               "Brief allowlist; canonical source URL unverified — Phase B verification gap.",
+		Notes:               "Source reviewed as chopratejas/headroom v0.23.0; 3x diagnostic benchmark was mixed/noisy with one token/cost regression and only small mean savings, so it is not recommended.",
 	},
 
 	// ── retrieval ───────────────────────────────────────────────────

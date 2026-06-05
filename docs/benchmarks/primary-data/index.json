@@ -6,7 +6,7 @@
   "included_files": "aggregate, manifest, suite status, per-run comparison, task prompt, exit status, and quality-gate output files.",
   "excluded_files": "raw Claude/Codex logs, raw assistant transcript stdout/stderr, plugin zip artifacts, and copied worktrees.",
   "scrubbing": "Absolute local repository, home, and temporary-directory paths are replaced with placeholders.",
-  "file_count": 519,
+  "file_count": 555,
   "files": [
     {
       "path": "docs/benchmarks/primary-data/README.md",
@@ -1812,6 +1812,186 @@
       "path": "docs/benchmarks/primary-data/suites/grepai-path-constrained/suite-status.json",
       "bytes": 194,
       "sha256": "f7df10eae475db97e6b99f7e0192c6cd558ad2417a78a8dcc0a6ad9e2b10a8d1"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/aggregate.json",
+      "bytes": 2896,
+      "sha256": "488532b26fa5f4964ed688e9f41907bcb32d75d039dac4fe4358d813c21ab249"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/manifest.json",
+      "bytes": 2978,
+      "sha256": "111186dca9d1c37083cf56a594b7884501d8e6302720435adcd1fd55c3fd10be"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-01/baseline-quality-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-01/baseline-quality.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-01/baseline-quality.stdout.txt",
+      "bytes": 179,
+      "sha256": "ecaa4810d8b13910bb352e497b33699f922c9827afca6dcb84020cc735647ce8"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-01/baseline.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-01/comparison.json",
+      "bytes": 3891,
+      "sha256": "ba42d61a0fe55c80bad8d5ca55acf9ec2eb8be63e1dba67d2525ee7a5a7d7f02"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-01/optimized-quality-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-01/optimized-quality.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-01/optimized-quality.stdout.txt",
+      "bytes": 179,
+      "sha256": "ecaa4810d8b13910bb352e497b33699f922c9827afca6dcb84020cc735647ce8"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-01/optimized.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-01/suite-run.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-01/task-prompt.txt",
+      "bytes": 682,
+      "sha256": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-02/baseline-quality-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-02/baseline-quality.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-02/baseline-quality.stdout.txt",
+      "bytes": 179,
+      "sha256": "ecaa4810d8b13910bb352e497b33699f922c9827afca6dcb84020cc735647ce8"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-02/baseline.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-02/comparison.json",
+      "bytes": 3894,
+      "sha256": "4ea17ab75f5e27dc75ae6a69e95a04b20491907a0215e69ea6153f6588624c3c"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-02/optimized-quality-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-02/optimized-quality.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-02/optimized-quality.stdout.txt",
+      "bytes": 179,
+      "sha256": "ecaa4810d8b13910bb352e497b33699f922c9827afca6dcb84020cc735647ce8"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-02/optimized.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-02/suite-run.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-02/task-prompt.txt",
+      "bytes": 682,
+      "sha256": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-03/baseline-quality-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-03/baseline-quality.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-03/baseline-quality.stdout.txt",
+      "bytes": 179,
+      "sha256": "ecaa4810d8b13910bb352e497b33699f922c9827afca6dcb84020cc735647ce8"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-03/baseline.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-03/comparison.json",
+      "bytes": 3895,
+      "sha256": "2063311a02e9ce84b4bc6b20bd97c5dcabc75172b86c6ef9499d6155f80e22ee"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-03/optimized-quality-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-03/optimized-quality.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-03/optimized-quality.stdout.txt",
+      "bytes": 179,
+      "sha256": "ecaa4810d8b13910bb352e497b33699f922c9827afca6dcb84020cc735647ce8"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-03/optimized.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-03/suite-run.exit-status",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/run-03/task-prompt.txt",
+      "bytes": 682,
+      "sha256": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5"
+    },
+    {
+      "path": "docs/benchmarks/primary-data/suites/headroom-claude/suite-status.json",
+      "bytes": 186,
+      "sha256": "ac8dd488fc03a25610d6537f3f624a7e2d8affb6fb3cbeb5ece4123a4ae5ca2a"
     },
     {
       "path": "docs/benchmarks/primary-data/suites/probe/aggregate.json",

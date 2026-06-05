@@ -628,11 +628,21 @@
       "candidate": "CodeGraph",
       "source": "https://github.com/colbymchenry/codegraph",
       "primary_token_category": "input_context_tokens_via_code_graph_retrieval",
-      "evidence_state": "source_reviewed_benchmark_pending",
+      "evidence_state": "source_reviewed_3x_diagnostic_negative",
       "suite_id": "codegraph-claude",
       "promotion_policy": "candidate_until_reviewed",
       "current_product_status": "research_only",
-      "promotion_gate": "Run ONLY=codegraph-claude REPEATS=3 ./scripts/benchmark-suite.sh, publish sanitized aggregate artifacts, validate them, then land a separate promotion change if quality and savings pass."
+      "promotion_gate": "Needs a new fixture or approach with lower full-session cost before promotion."
+    },
+    {
+      "candidate": "Headroom",
+      "source": "https://github.com/chopratejas/headroom",
+      "primary_token_category": "tool_output_tokens_via_explicit_mcp_compression",
+      "evidence_state": "source_reviewed_3x_diagnostic_mixed",
+      "suite_id": "headroom-claude",
+      "promotion_policy": "candidate_until_reviewed",
+      "current_product_status": "research_only_not_recommended",
+      "promotion_gate": "Needs stronger repeated proof with consistent full-session cost reduction before promotion."
     }
   ],
   "replication_policy": {
@@ -641,7 +651,7 @@
     "runner": "scripts/benchmark-repeat.sh",
     "status_note": "All named tool recommendations in the proof suite now have at least three fresh baseline/optimized pairs with passing quality gates. Strong claims still remain scoped to the tested fixture, harness, and token category.",
     "published_aggregate_count": 13,
-    "diagnostic_aggregate_count": 2
+    "diagnostic_aggregate_count": 3
   },
   "repeated_suite_artifacts": {
     "agent-analyzer-guided-v3": {
@@ -1011,6 +1021,32 @@
       "promotion_policy": "candidate_until_reviewed",
       "candidate_source_url": "https://github.com/colbymchenry/codegraph",
       "candidate_issue": "https://github.com/Priivacy-ai/agent-log-analyzer/issues/173"
+    },
+    "headroom-claude": {
+      "artifact": "reports/aggregate-headroom-claude.json",
+      "quality_passed": true,
+      "completed_repeats": 3,
+      "required_repeats": 3,
+      "estimated_token_delta_mean": -138.0,
+      "tool_output_token_delta_mean": -266.0,
+      "native_cost_delta_mean": -0.003129866666666666,
+      "codex_uncached_plus_output_delta_mean": null,
+      "codex_reasoning_delta_mean": null,
+      "published_api_cost_delta_mean": -0.002204700000000004,
+      "published_api_cost_savings_percent": 1.2648133816532954,
+      "published_api_cost_scaled_examples": {
+        "savings_rate": 0.012648133816532953,
+        "savings_percent": 1.2648133816532954,
+        "weekly_100_usd": 1.2648133816532954,
+        "weekly_500_usd": 6.324066908266476,
+        "monthly_2000_usd": 25.296267633065906,
+        "monthly_5000_usd": 63.240669082664766,
+        "monthly_10000_usd": 126.48133816532953,
+        "basis": "Scaled linearly from the suite's optimized-vs-baseline published API-rate delta: savings = comparable baseline spend * savings_percent."
+      },
+      "promotion_policy": "candidate_until_reviewed",
+      "candidate_source_url": "https://github.com/chopratejas/headroom",
+      "candidate_issue": "https://github.com/Priivacy-ai/agent-log-analyzer/issues/174"
     },
     "spec-kitty-agent-analyzer-guided": {
       "artifact": "reports/aggregate-spec-kitty-agent-analyzer-guided.json",

@@ -1,0 +1,189 @@
+{
+  "schema_version": "2026-05-24",
+  "suite_id": "headroom-claude",
+  "source": "scripts/benchmark-repeat.sh aggregate.json",
+  "reproducibility": {
+    "manifest_sha256": "111186dca9d1c37083cf56a594b7884501d8e6302720435adcd1fd55c3fd10be",
+    "manifest_schema_version": "2026-06-04",
+    "harness": "claude",
+    "required_repeats": 3,
+    "completed_repeats": 3,
+    "fresh_context_contract": "Each repeat invokes one full baseline/optimized harness run. The harness creates fresh detached git worktrees and launches separate Claude/Codex task sessions for baseline and optimized runs.",
+    "analyzer_commit": "bb460d35a3b23eabbd20953285c777f688864445",
+    "analyzer_dirty": true,
+    "source_commit": "1116b800a71cc532b37422f9b56b4391b3cf81f9",
+    "source_dirty": true,
+    "base_ref": "benchmark/owner-breakdown-v1-base",
+    "quality_command": "go test ./...",
+    "suite_file_sha256": "67ee567b52255426ec56c9d726b8caa8faf14b38cb0a94f27fa7e2933e0fe8ab",
+    "task_prompt_sha256": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5",
+    "guidance_sha256": "3c8ccaf10416182edb4b6e83000e9f03dc6647892686907d9e353875d9299847",
+    "mcp_config_sha256": "cd76eec18668e14bbfbd3fb4b137eec2ff3a1cefa6a45da2e1eefa31ff0cb316",
+    "tool_versions": {
+      "git": "git version 2.52.0",
+      "go": "go version go1.25.4 darwin/arm64",
+      "python3": "Python 3.14.5",
+      "node": "v25.2.1",
+      "npm": "11.6.2",
+      "npx": "11.6.2",
+      "claude": "2.1.165 (Claude Code)",
+      "codex": "codex-cli 0.134.0",
+      "uvx": "uv-tool-uvx 0.5.13 (c456bae5e 2024-12-27)",
+      "rtk": "rtk 0.41.0",
+      "grepai": "available"
+    }
+  },
+  "required_repeats": 3,
+  "completed_repeats": 3,
+  "quality_passed": true,
+  "failed_repeats": [],
+  "delta_stats": {
+    "avoidable_waste_high_points": {
+      "n": 3,
+      "mean": -1.3333333333333333,
+      "median": -1,
+      "min": -3,
+      "max": 0,
+      "stdev": 1.5275252316519468
+    },
+    "avoidable_waste_low_points": {
+      "n": 3,
+      "mean": -0.3333333333333333,
+      "median": 0,
+      "min": -1,
+      "max": 0,
+      "stdev": 0.5773502691896257
+    },
+    "claude_cache_creation_input_tokens": {
+      "n": 3,
+      "mean": 536.6666666666666,
+      "median": 325,
+      "min": 156,
+      "max": 1129,
+      "stdev": 519.8887701550528
+    },
+    "claude_cache_read_input_tokens": {
+      "n": 3,
+      "mean": -16662.333333333332,
+      "median": -24627,
+      "min": -24656,
+      "max": -704,
+      "stdev": 13820.329675276684
+    },
+    "claude_output_tokens": {
+      "n": 3,
+      "mean": -28.666666666666668,
+      "median": -168,
+      "min": -425,
+      "max": 507,
+      "stdev": 481.3692276551684
+    },
+    "claude_total_cost_usd": {
+      "n": 3,
+      "mean": -0.003129866666666666,
+      "median": -0.005716200000000005,
+      "min": -0.008402350000000003,
+      "max": 0.0047289500000000095,
+      "stdev": 0.006937189633117537
+    },
+    "context_growth_events": {
+      "n": 3,
+      "mean": -0.3333333333333333,
+      "median": 0,
+      "min": -1,
+      "max": 0,
+      "stdev": 0.5773502691896257
+    },
+    "estimated_tokens": {
+      "n": 3,
+      "mean": -138.0,
+      "median": -896,
+      "min": -950,
+      "max": 1432,
+      "stdev": 1359.9279392673716
+    },
+    "failed_commands": {
+      "n": 3,
+      "mean": -0.3333333333333333,
+      "median": -1,
+      "min": -1,
+      "max": 1,
+      "stdev": 1.1547005383792515
+    },
+    "rereads": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "stdev": 0.0
+    },
+    "tool_output_tokens": {
+      "n": 3,
+      "mean": -266.0,
+      "median": -658,
+      "min": -970,
+      "max": 830,
+      "stdev": 961.8981235037315
+    }
+  },
+  "run_dirs": [
+    "run-01",
+    "run-02",
+    "run-03"
+  ],
+  "promotion_policy": "candidate_until_reviewed",
+  "candidate_source_url": "https://github.com/chopratejas/headroom",
+  "candidate_issue": "https://github.com/Priivacy-ai/agent-log-analyzer/issues/174",
+  "published_api_cost_estimate": {
+    "harness": "claude",
+    "complete_cost_surface": true,
+    "multi_session_runs_not_in_stdout_usage": [],
+    "rates": {
+      "model_assumption": "Claude Sonnet 4.6",
+      "input_tokens_per_mtok_usd": 3.0,
+      "cache_creation_input_tokens_per_mtok_usd": 6.0,
+      "cache_read_input_tokens_per_mtok_usd": 0.3,
+      "output_tokens_per_mtok_usd": 15.0
+    },
+    "baseline_mean_usd": 0.1743103,
+    "optimized_mean_usd": 0.1721056,
+    "delta_mean_usd": -0.002204700000000004,
+    "savings_rate": 0.012648133816532953,
+    "savings_percent": 1.2648133816532954,
+    "scaled_examples": {
+      "savings_rate": 0.012648133816532953,
+      "savings_percent": 1.2648133816532954,
+      "weekly_100_usd": 1.2648133816532954,
+      "weekly_500_usd": 6.324066908266476,
+      "monthly_2000_usd": 25.296267633065906,
+      "monthly_5000_usd": 63.240669082664766,
+      "monthly_10000_usd": 126.48133816532953,
+      "basis": "Scaled linearly from the suite's optimized-vs-baseline published API-rate delta: savings = comparable baseline spend * savings_percent."
+    },
+    "delta_min_usd": -0.007955099999999993,
+    "delta_max_usd": 0.006985199999999969,
+    "runs": [
+      {
+        "run": "run-01",
+        "baseline_usd": 0.16445220000000002,
+        "optimized_usd": 0.1714374,
+        "delta_usd": 0.006985199999999969
+      },
+      {
+        "run": "run-02",
+        "baseline_usd": 0.1817568,
+        "optimized_usd": 0.1761126,
+        "delta_usd": -0.005644199999999988
+      },
+      {
+        "run": "run-03",
+        "baseline_usd": 0.1767219,
+        "optimized_usd": 0.1687668,
+        "delta_usd": -0.007955099999999993
+      }
+    ],
+    "note": "Uses exposed Claude Code aggregate usage fields repriced at published Claude Sonnet 4.6 API rates. Claude Code native billing can differ because raw runs also report internal model usage."
+  },
+  "privacy_boundary": "Raw Claude/Codex logs, raw prompts, local paths, and secrets are not included in public aggregate artifacts."
+}

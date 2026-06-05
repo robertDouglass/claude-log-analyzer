@@ -67,8 +67,10 @@ with `distill` and `token_optimizer_mcp` as research-only candidates.
 **`shell_output_reducer`** — Compressing or proxying shell command output.
 Responds to `shell_output_bloat`. Anchored by `RTK (Rust Token Killer,
 rtk-ai/rtk)` (rank 1, waiver-gated), with `leanctx` and `headroom` as
-research-only entries. Squeez is intentionally not in the recommendable
-registry because it conflicts with Spec Kitty workflows.
+research-only entries. Headroom has a verified source URL and a 3x diagnostic
+suite, but remains not recommended because the result was mixed/noisy and too
+small to prove reliable savings. Squeez is intentionally not in the
+recommendable registry because it conflicts with Spec Kitty workflows.
 
 **`retrieval`** — Code-aware retrieval that replaces broad file reads.
 Responds to `repeated_file_reads` and `broad_repo_exploration`. The
@@ -115,14 +117,16 @@ recommendations leave them empty.
 Adding, removing, or modifying any registry entry must bump
 `RegistryVersion()` — a CI test compares the live value to a checked-in
 golden constant and fails fast otherwise. The current benchmark-narrowed
-registry is `"phase-a-2026-06-04-codegraph-negative-benchmark"`; see NFR-005.
+registry is `"phase-a-2026-06-05-headroom-diagnostic-benchmark"`; see NFR-005.
 
 For URL verification, see `research.md` §"Per-tool research notes". The
 short version: Phase A does **not** invent or guess source URLs. Every
 entry whose public URL cannot be verified ships with
 `install_policy = research_only`, `SourceURL = ""`, and a `Notes` field
-explaining the gap. Phase B is expected to verify and promote the
-research-only entries as their sources stabilize.
+explaining the gap. Entries with verified URLs may still remain
+`research_only` when benchmark evidence is negative, mixed, too small, or
+otherwise not promotion-grade. Phase B is expected to verify remaining URLs
+and promote only entries with strong repeated proof.
 
 ## State model
 
@@ -420,9 +424,9 @@ adds the missing taxonomy.
 Spec FR-010 describes a fallback chain for `shell_output_bloat`: when
 RTK is `active_high` (and bloat persists) or `rejected_medium`, the
 engine should recommend `leanctx` (and optionally `headroom`). Phase A
-ships `leanctx` and `headroom` as `research_only` because the brief
-did not include verifiable public source URLs for either tool, and
-Phase A's policy is to never recommend research-only entries by
+ships `leanctx` and `headroom` as `research_only`; Headroom now has a
+verified public source URL but still lacks recommendation-grade benchmark
+proof. Phase A's policy is to never recommend research-only entries by
 default. As a result, when RTK is active or rejected:
 
 - `pickPrimary` walks past RTK (via the skip-and-continue branches),
@@ -432,11 +436,11 @@ default. As a result, when RTK is active or rejected:
 
 Acceptance scenarios AS-05 and AS-06 accept this `Primary = nil`
 outcome explicitly. Callers should treat this as: "Phase A has no
-verified shell-output fallback yet — surface the SkipNote so the user
+proved shell-output fallback yet — surface the SkipNote so the user
 sees the active-or-rejected RTK observation, and treat the absent
-recommendation as 'no additional play available'." Phase B unblocks
-this by verifying `leanctx` (and optionally `headroom`) URLs and
-promoting them from `research_only` to `recommend`.
+recommendation as 'no additional play available'." Future promotion must
+verify `leanctx` and produce stronger repeated proof for any Headroom
+recommendation before moving either entry out of `research_only`.
 
 ### Gap 2 — `unchanged_file_rereads` emits an empty advisory in Phase A
 

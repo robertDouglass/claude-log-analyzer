@@ -230,7 +230,7 @@ for i in $(seq 1 "$REPEATS"); do
   mkdir -p "$run_dir"
   if [[ -n "$ORIGINAL_OPTIMIZED_MCP_CONFIG_FILE" ]]; then
     run_mcp_config="$run_dir/optimized-mcp-config.json"
-    python3 - "$ORIGINAL_OPTIMIZED_MCP_CONFIG_FILE" "$run_mcp_config" "$RUN_NAME" "$run_id" "$$" <<'PY'
+    python3 - "$ORIGINAL_OPTIMIZED_MCP_CONFIG_FILE" "$run_mcp_config" "$RUN_NAME" "$run_id" "$$" "$ANALYZER_REPO" "$run_dir" <<'PY'
 import json
 import re
 import sys
@@ -241,9 +241,28 @@ target = Path(sys.argv[2])
 run_name = sys.argv[3]
 run_id = sys.argv[4]
 pid = sys.argv[5]
+analyzer_repo = sys.argv[6]
+run_dir = sys.argv[7]
 
 config = json.loads(source.read_text())
 suffix = re.sub(r"[^A-Za-z0-9_]", "_", f"{run_name}_{run_id}_{pid}")[-48:]
+
+def expand_placeholders(value):
+    if isinstance(value, dict):
+        return {key: expand_placeholders(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [expand_placeholders(item) for item in value]
+    if isinstance(value, str):
+        return (
+            value
+            .replace("${ANALYZER_REPO}", analyzer_repo)
+            .replace("$ANALYZER_REPO", analyzer_repo)
+            .replace("__BENCHMARK_RUN_DIR__", run_dir)
+            .replace("__BENCHMARK_RUN_SUFFIX__", suffix)
+        )
+    return value
+
+config = expand_placeholders(config)
 for server in config.get("mcpServers", {}).values():
     env = server.setdefault("env", {})
     if "CODE_CHUNKS_COLLECTION_NAME_OVERRIDE" in env:

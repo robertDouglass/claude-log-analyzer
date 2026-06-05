@@ -1,0 +1,189 @@
+{
+  "schema_version": "2026-05-24",
+  "suite_id": "gathon-claude",
+  "source": "scripts/benchmark-repeat.sh aggregate.json",
+  "reproducibility": {
+    "manifest_sha256": "7350fd19ea2980c9fbbc5c31358c8228b3d1810f2f1a8c886bd5101482a40380",
+    "manifest_schema_version": "2026-06-04",
+    "harness": "claude",
+    "required_repeats": 3,
+    "completed_repeats": 3,
+    "fresh_context_contract": "Each repeat invokes one full baseline/optimized harness run. The harness creates fresh detached git worktrees and launches separate Claude/Codex task sessions for baseline and optimized runs.",
+    "analyzer_commit": "e28e71a965aeef22fa1f68542af2d516e4f126aa",
+    "analyzer_dirty": true,
+    "source_commit": "1116b800a71cc532b37422f9b56b4391b3cf81f9",
+    "source_dirty": true,
+    "base_ref": "benchmark/owner-breakdown-v1-base",
+    "quality_command": "go test ./...",
+    "suite_file_sha256": "d52a79404542508e2ecc2b118277bad22e46df86d95069bede5e8f4f9dbd599b",
+    "task_prompt_sha256": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5",
+    "guidance_sha256": "d36e664e923df7916ac78753a5d8f9e9178de76595c967797a2e9474a44f1431",
+    "mcp_config_sha256": "902fd11d303d7c4b5bf8e6cd1fee743aff06a36772dda736c7621e1b0775ada6",
+    "tool_versions": {
+      "git": "git version 2.52.0",
+      "go": "go version go1.25.4 darwin/arm64",
+      "python3": "Python 3.14.5",
+      "node": "v25.2.1",
+      "npm": "11.6.2",
+      "npx": "11.6.2",
+      "claude": "2.1.165 (Claude Code)",
+      "codex": "codex-cli 0.134.0",
+      "uvx": "uv-tool-uvx 0.5.13 (c456bae5e 2024-12-27)",
+      "rtk": "rtk 0.41.0",
+      "grepai": "available"
+    }
+  },
+  "required_repeats": 3,
+  "completed_repeats": 3,
+  "quality_passed": true,
+  "failed_repeats": [],
+  "delta_stats": {
+    "avoidable_waste_high_points": {
+      "n": 3,
+      "mean": -0.6666666666666666,
+      "median": -1,
+      "min": -1,
+      "max": 0,
+      "stdev": 0.5773502691896257
+    },
+    "avoidable_waste_low_points": {
+      "n": 3,
+      "mean": -0.6666666666666666,
+      "median": -1,
+      "min": -1,
+      "max": 0,
+      "stdev": 0.5773502691896257
+    },
+    "claude_cache_creation_input_tokens": {
+      "n": 3,
+      "mean": 5171.333333333333,
+      "median": 5235,
+      "min": 4198,
+      "max": 6081,
+      "stdev": 943.1131073913316
+    },
+    "claude_cache_read_input_tokens": {
+      "n": 3,
+      "mean": 246904.0,
+      "median": 219108,
+      "min": 208047,
+      "max": 313557,
+      "stdev": 57987.526563908556
+    },
+    "claude_output_tokens": {
+      "n": 3,
+      "mean": 2071.6666666666665,
+      "median": 2173,
+      "min": 1807,
+      "max": 2235,
+      "stdev": 231.29490554989172
+    },
+    "claude_total_cost_usd": {
+      "n": 3,
+      "mean": 0.12492836666666664,
+      "median": 0.11834864999999997,
+      "min": 0.10565159999999998,
+      "max": 0.15078484999999997,
+      "stdev": 0.023274923575617452
+    },
+    "context_growth_events": {
+      "n": 3,
+      "mean": 0.0,
+      "median": 0,
+      "min": 0,
+      "max": 0,
+      "stdev": 0.0
+    },
+    "estimated_tokens": {
+      "n": 3,
+      "mean": 9471.333333333334,
+      "median": 8531,
+      "min": 7662,
+      "max": 12221,
+      "stdev": 2420.597102644993
+    },
+    "failed_commands": {
+      "n": 3,
+      "mean": 1.6666666666666667,
+      "median": 2,
+      "min": 1,
+      "max": 2,
+      "stdev": 0.5773502691896257
+    },
+    "rereads": {
+      "n": 3,
+      "mean": 0.6666666666666666,
+      "median": 0,
+      "min": 0,
+      "max": 2,
+      "stdev": 1.1547005383792515
+    },
+    "tool_output_tokens": {
+      "n": 3,
+      "mean": 5042.0,
+      "median": 4103,
+      "min": 3891,
+      "max": 7132,
+      "stdev": 1813.0943163553295
+    }
+  },
+  "run_dirs": [
+    "run-01",
+    "run-02",
+    "run-03"
+  ],
+  "promotion_policy": "candidate_until_reviewed",
+  "candidate_source_url": "https://github.com/pauldx/gathon",
+  "candidate_issue": "https://github.com/Priivacy-ai/agent-log-analyzer/issues/175",
+  "published_api_cost_estimate": {
+    "harness": "claude",
+    "complete_cost_surface": true,
+    "multi_session_runs_not_in_stdout_usage": [],
+    "rates": {
+      "model_assumption": "Claude Sonnet 4.6",
+      "input_tokens_per_mtok_usd": 3.0,
+      "cache_creation_input_tokens_per_mtok_usd": 6.0,
+      "cache_read_input_tokens_per_mtok_usd": 0.3,
+      "output_tokens_per_mtok_usd": 15.0
+    },
+    "baseline_mean_usd": 0.1686022,
+    "optimized_mean_usd": 0.3048184,
+    "delta_mean_usd": 0.13621619999999998,
+    "savings_rate": -0.8079147247188944,
+    "savings_percent": -80.79147247188943,
+    "scaled_examples": {
+      "savings_rate": -0.8079147247188944,
+      "savings_percent": -80.79147247188943,
+      "weekly_100_usd": -80.79147247188943,
+      "weekly_500_usd": -403.9573623594472,
+      "monthly_2000_usd": -1615.8294494377888,
+      "monthly_5000_usd": -4039.573623594472,
+      "monthly_10000_usd": -8079.147247188944,
+      "basis": "Scaled linearly from the suite's optimized-vs-baseline published API-rate delta: savings = comparable baseline spend * savings_percent."
+    },
+    "delta_min_usd": 0.11474610000000002,
+    "delta_max_usd": 0.16412609999999997,
+    "runs": [
+      {
+        "run": "run-01",
+        "baseline_usd": 0.18047760000000002,
+        "optimized_usd": 0.310254,
+        "delta_usd": 0.12977639999999996
+      },
+      {
+        "run": "run-02",
+        "baseline_usd": 0.1661184,
+        "optimized_usd": 0.2808645,
+        "delta_usd": 0.11474610000000002
+      },
+      {
+        "run": "run-03",
+        "baseline_usd": 0.1592106,
+        "optimized_usd": 0.3233367,
+        "delta_usd": 0.16412609999999997
+      }
+    ],
+    "note": "Uses exposed Claude Code aggregate usage fields repriced at published Claude Sonnet 4.6 API rates. Claude Code native billing can differ because raw runs also report internal model usage."
+  },
+  "privacy_boundary": "Raw Claude/Codex logs, raw prompts, local paths, and secrets are not included in public aggregate artifacts."
+}

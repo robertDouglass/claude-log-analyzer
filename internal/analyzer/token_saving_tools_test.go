@@ -219,6 +219,28 @@ func TestHeadroomResearchOnlyAfterDiagnosticBenchmark(t *testing.T) {
 	}
 }
 
+func TestGathonResearchOnlyAfterNegativeBenchmark(t *testing.T) {
+	tool, ok := GetTool("gathon")
+	if !ok {
+		t.Fatal("gathon missing from registry")
+	}
+	if tool.SourceURL != "https://github.com/pauldx/gathon" {
+		t.Fatalf("gathon SourceURL = %q", tool.SourceURL)
+	}
+	if tool.InstallPolicy != PolicyResearchOnly || !tool.ResearchOnly {
+		t.Fatalf("gathon must remain research-only after negative benchmark proof; got policy=%q research_only=%v",
+			tool.InstallPolicy, tool.ResearchOnly)
+	}
+	if tool.FreeReportAllowed || tool.PaidPackAllowed {
+		t.Fatalf("gathon must not be emitted in report packs before promotion; free=%v paid=%v",
+			tool.FreeReportAllowed, tool.PaidPackAllowed)
+	}
+	notes := strings.ToLower(tool.Notes)
+	if !strings.Contains(notes, "compatibility pin") || !strings.Contains(notes, "increased full-session tokens and cost") {
+		t.Fatalf("gathon Notes must explain setup and negative benchmark result: %q", tool.Notes)
+	}
+}
+
 func TestRegistryAllowlistCoverage(t *testing.T) {
 	// Step 1: brief allowlist has no internal duplicates.
 	seenBrief := make(map[ToolID]int, len(briefAllowlist))
@@ -264,7 +286,7 @@ func TestRegistryAllowlistCoverage(t *testing.T) {
 }
 
 func TestRegistryVersionConstant(t *testing.T) {
-	if got, want := RegistryVersion(), "phase-a-2026-06-05-headroom-proxy-negative-benchmark"; got != want {
+	if got, want := RegistryVersion(), "phase-a-2026-06-05-gathon-negative-benchmark"; got != want {
 		t.Errorf("RegistryVersion() = %q, want %q", got, want)
 	}
 }

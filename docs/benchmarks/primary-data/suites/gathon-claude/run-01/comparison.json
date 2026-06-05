@@ -1,0 +1,98 @@
+{
+  "schema_version": "2026-05-23",
+  "fixed_commit": "1116b800a71cc532b37422f9b56b4391b3cf81f9",
+  "claude_version": "2.1.165 (Claude Code)",
+  "baseline_claude_args": "--setting-sources project,local --strict-mcp-config --mcp-config {\"mcpServers\":{}} --settings {\"enabledPlugins\":{\"sentrux@sentrux-marketplace\":false},\"permissions\":{\"defaultMode\":\"bypassPermissions\"}} --permission-mode bypassPermissions --disallowedTools Agent --output-format json --model sonnet --max-budget-usd 15",
+  "optimized_claude_args": "--setting-sources project,local --strict-mcp-config --mcp-config {\"mcpServers\":{}} --settings {\"enabledPlugins\":{\"sentrux@sentrux-marketplace\":false},\"permissions\":{\"defaultMode\":\"bypassPermissions\"}} --permission-mode bypassPermissions --disallowedTools Agent --output-format json --model sonnet --max-budget-usd 15",
+  "baseline_claude_actual_args": "--setting-sources project,local --strict-mcp-config --mcp-config {\"mcpServers\":{}} --settings {\"enabledPlugins\":{\"sentrux@sentrux-marketplace\":false},\"permissions\":{\"defaultMode\":\"bypassPermissions\"}} --permission-mode bypassPermissions --disallowedTools Agent --output-format json --model sonnet --max-budget-usd 15",
+  "optimized_claude_actual_args": "--setting-sources project,local --strict-mcp-config --mcp-config {\"mcpServers\":{}} --settings {\"enabledPlugins\":{\"sentrux@sentrux-marketplace\":false},\"permissions\":{\"defaultMode\":\"bypassPermissions\"}} --permission-mode bypassPermissions --disallowedTools Agent --output-format json --model sonnet --max-budget-usd 15 --mcp-config $ANALYZER_REPO/.data/benchmarks/suites/gathon-claude/run-01/optimized-mcp-config.json",
+  "optimized_env_keys": [],
+  "baseline_exit_status": 0,
+  "optimized_exit_status": 0,
+  "baseline_quality_status": "0",
+  "optimized_quality_status": "0",
+  "baseline": {
+    "label": "baseline Claude Code -p",
+    "score": 38,
+    "estimated_tokens": 14510,
+    "tool_output_tokens": 8554,
+    "avoidable_waste_pct": {
+      "low": 24,
+      "high": 62
+    },
+    "rereads": 0,
+    "retry_depth_max": 1,
+    "context_growth_events": 3,
+    "failed_commands": 3,
+    "session_count": 1
+  },
+  "optimized": {
+    "label": "plugin-assisted Claude Code -p",
+    "score": 39,
+    "estimated_tokens": 23041,
+    "tool_output_tokens": 12657,
+    "avoidable_waste_pct": {
+      "low": 23,
+      "high": 61
+    },
+    "rereads": 0,
+    "retry_depth_max": 1,
+    "context_growth_events": 3,
+    "failed_commands": 5,
+    "session_count": 1
+  },
+  "baseline_tool_use_counts": {
+    "Bash": 2,
+    "Edit": 4,
+    "Read": 5
+  },
+  "optimized_tool_use_counts": {
+    "Bash": 2,
+    "Edit": 4,
+    "Read": 4,
+    "ToolSearch": 3,
+    "mcp__gathon__find_symbol": 1,
+    "mcp__gathon__get_architecture_overview": 1,
+    "mcp__gathon__get_minimal_context": 1,
+    "mcp__gathon__query_graph": 2,
+    "mcp__gathon__semantic_search": 2
+  },
+  "baseline_claude_usage": {
+    "total_cost_usd": 0.15181160000000002,
+    "num_turns": 12,
+    "input_tokens": 9,
+    "cache_creation_input_tokens": 14100,
+    "cache_read_input_tokens": 204452,
+    "output_tokens": 2301,
+    "models_used": [
+      "claude-haiku-4-5-20251001",
+      "claude-sonnet-4-6"
+    ]
+  },
+  "optimized_claude_usage": {
+    "total_cost_usd": 0.27016025,
+    "num_turns": 21,
+    "input_tokens": 22,
+    "cache_creation_input_tokens": 19335,
+    "cache_read_input_tokens": 423560,
+    "output_tokens": 4474,
+    "models_used": [
+      "claude-haiku-4-5-20251001",
+      "claude-sonnet-4-6"
+    ]
+  },
+  "delta": {
+    "estimated_tokens": 8531,
+    "tool_output_tokens": 4103,
+    "avoidable_waste_low_points": -1,
+    "avoidable_waste_high_points": -1,
+    "rereads": 0,
+    "context_growth_events": 0,
+    "failed_commands": 2,
+    "claude_total_cost_usd": 0.11834864999999997,
+    "claude_cache_creation_input_tokens": 5235,
+    "claude_cache_read_input_tokens": 219108,
+    "claude_output_tokens": 2173
+  },
+  "privacy_boundary": "Publish sanitized reports and comparison JSON only. Do not publish raw Claude Code logs, raw prompts, secrets, private paths, or unknown private tool names."
+}

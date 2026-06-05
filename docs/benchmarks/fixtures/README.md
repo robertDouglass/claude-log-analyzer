@@ -10,6 +10,7 @@ This directory contains the permanent, auditable benchmark inputs used by the pr
 - `guidance/claude-token-efficient-profile.md`: the minimal CLAUDE.md profile used for the claude-token-efficient trial.
 - `mcp/claude-context-local.json`: local claude-context MCP configuration used when Ollama and Milvus are available.
 - `mcp/codegraph-npx.json`: pinned CodeGraph MCP configuration used by the candidate CodeGraph suite.
+- `mcp/gathon-local.json`: local Gathon MCP configuration used by the candidate Gathon suite.
 
 ## Running
 
@@ -64,5 +65,5 @@ Telemetry-only tools such as ccusage and ccstatusline do not have a task interve
 Suites with `promotion_policy: "candidate_until_reviewed"` are allowed to
 produce repeatable benchmark artifacts, but the publisher keeps them in the
 diagnostic bucket until a later registry/report-pack change deliberately
-promotes them. This protects candidate tools such as CodeGraph from becoming
-product recommendations simply because the local run completed.
+promotes them. This protects candidate tools such as CodeGraph and Gathon from
+becoming product recommendations simply because the local run completed.

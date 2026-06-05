@@ -40,6 +40,7 @@ Run candidate suites such as CodeGraph or Headroom:
 ONLY=codegraph-claude REPEATS=3 ./scripts/benchmark-suite.sh
 ONLY=headroom-claude REPEATS=3 ./scripts/benchmark-suite.sh
 ONLY=headroom-proxy-claude REPEATS=3 ./scripts/benchmark-suite.sh
+ONLY=gathon-claude REPEATS=3 ./scripts/benchmark-suite.sh
 ```
 
 Run a single harness directly:
@@ -151,6 +152,7 @@ All rows below passed the quality gate in all three repeats.
 | CodeGraph | Claude Code | `+6,094` | `+4,046` | Claude output `+450` | native `+$0.081250`; API estimate `+$0.095826` | `+54.3%` | Research-only diagnostic |
 | Headroom MCP | Claude Code | `-138` | `-266` | Claude output `-29` | native `-$0.003130`; API estimate `-$0.002205` | `-1.3%` | Research-only diagnostic |
 | Headroom proxy | Claude Code | `-1,109` | `-759` | Claude output `-233` | native `+$0.064141`; API estimate `+$0.084046` | `+49.7%` | Not recommended |
+| Gathon | Claude Code | `+9,471` | `+5,042` | Claude output `+2,072` | native `+$0.124928`; API estimate `+$0.136216` | `+80.8%` | Not recommended |
 | Agent Analyzer text guidance | Codex | `-14,520` | `-14,527` | output `-483`; reasoning `-45`; uncached+output `-24,369` | API estimate `-$0.062392` | `-31.8%` | Positive here |
 | Caveman | Claude Code | `+4,355` | `+4,868` | Claude output `-370` | native `+$0.009919`; API estimate `+$0.009211` | `+3.9%` | Removed |
 | Caveman | Codex | `-9,210` | `-9,109` | output `-172`; reasoning `-2`; uncached+output `-4,739` | API estimate `-$0.033986` | `-18.3%` | Harness-specific |
@@ -174,6 +176,14 @@ tokens, but increased native Claude Code cost in all three repeats and raised
 the published API-rate estimate by `49.7%`. It remains research-only/not
 recommended and must not be emitted as an Agent Analyzer recommendation from
 this result.
+
+Gathon has a pinned candidate suite (`gathon-claude`) using explicit MCP config
+only on the optimized side. Setup builds `.gathon/graph.db` in each optimized
+worktree and pins `tree-sitter-language-pack==0.9.1` so Gathon's Go parser can
+index the benchmark target. It passed quality 3/3, but increased estimated
+tokens, tool-output tokens, Claude output tokens, native Claude Code cost, and
+published API-rate cost. It remains research-only/not recommended and must not
+be emitted as an Agent Analyzer recommendation from this result.
 
 ccusage and ccstatusline are telemetry-only. They are useful for cost/context awareness, but they are not task interventions and are no longer represented as direct token reducers in the paid pack.
 

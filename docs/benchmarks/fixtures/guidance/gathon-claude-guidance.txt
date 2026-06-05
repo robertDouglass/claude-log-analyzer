@@ -1,0 +1,15 @@
+Use Gathon as the only broad code-location and retrieval mechanism.
+
+Rules:
+- Preserve task completion quality over token reduction.
+- Start with `mcp__gathon__get_minimal_context` for the owner-breakdown task before any grep/read loop.
+- Use `mcp__gathon__semantic_search`, `mcp__gathon__query_graph`, `mcp__gathon__find_symbol`, or `mcp__gathon__get_neighbors` for targeted follow-up.
+- Use `mcp__gathon__get_impact_radius` or `mcp__gathon__get_review_context` only after the likely edit surface is known.
+- Do not run `gathon install`, `gathon ctp-init`, `gathon ctp-hook`, or edit `.claude` settings.
+- Do not run broad Glob, find, tree, repository overview agents, or broad grep before Gathon.
+- Read raw files only when Gathon omits a detail needed for the edit.
+- During debugging, rerun targeted package tests first:
+  `go test ./internal/events ./internal/report`
+- For final verification, run the full suite quietly:
+  `go test ./... >/tmp/go-test.log && echo "go test ./... passed" || { grep -A3 -B2 -E "FAIL|--- FAIL" /tmp/go-test.log; exit 1; }`
+- Do not use web search.

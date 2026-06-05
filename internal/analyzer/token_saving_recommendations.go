@@ -380,11 +380,11 @@ func conflictsForTool(id ToolID) []ToolID {
 	case "context_mode":
 		return []ToolID{"token_optimizer_mcp", "headroom"}
 	case "claude_context":
-		return []ToolID{"grepai", "serena", "codegraph", "semble"}
+		return []ToolID{"grepai", "serena", "codegraph", "gathon", "semble"}
 	case "grepai":
-		return []ToolID{"claude_context", "serena", "codegraph", "semble"}
+		return []ToolID{"claude_context", "serena", "codegraph", "gathon", "semble"}
 	case "semble":
-		return []ToolID{"claude_context", "grepai", "serena", "codegraph"}
+		return []ToolID{"claude_context", "grepai", "serena", "codegraph", "gathon"}
 	case "claude_token_efficient":
 		return []ToolID{"caveman"}
 	default:

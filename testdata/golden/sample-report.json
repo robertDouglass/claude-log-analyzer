@@ -319,11 +319,12 @@
         "claude_context",
         "grepai",
         "serena",
-        "codegraph"
+        "codegraph",
+        "gathon"
       ],
       "evidence_counts": {}
     },
-    "registry_version": "phase-a-2026-06-05-headroom-proxy-negative-benchmark",
+    "registry_version": "phase-a-2026-06-05-gathon-negative-benchmark",
     "engine_version": "v0.2-benchmark-narrowed",
     "signals": [
       "no_usage_visibility",

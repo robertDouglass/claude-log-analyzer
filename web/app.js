@@ -807,6 +807,7 @@ const TOOL_LABEL = {
   grepai: "GrepAI",
   serena: "Serena",
   codegraph: "CodeGraph",
+  gathon: "Gathon",
   codebase_memory_mcp: "Codebase Memory MCP",
   code_review_graph: "Code Review Graph",
   semble: "Semble",

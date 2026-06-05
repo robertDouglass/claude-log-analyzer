@@ -1,0 +1,67 @@
+{
+  "schema_version": "2026-06-04",
+  "run_name": "gathon-claude",
+  "harness": "claude",
+  "required_repeats": 3,
+  "started_at_utc": "2026-06-05T09:32:32.851776Z",
+  "fresh_context_contract": "Each repeat invokes one full baseline/optimized harness run. The harness creates fresh detached git worktrees and launches separate Claude/Codex task sessions for baseline and optimized runs.",
+  "task_prompt_file": "<repo>/docs/benchmarks/fixtures/tasks/owner-breakdown-v3-noisy.txt",
+  "analyzer_repo": "<repo>",
+  "host": {
+    "platform": "macOS-15.7.7-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "python": "3.14.5"
+  },
+  "git": {
+    "analyzer": {
+      "commit": "e28e71a965aeef22fa1f68542af2d516e4f126aa",
+      "branch": "main",
+      "dirty": true,
+      "status_entry_count": 9
+    },
+    "source": {
+      "commit": "1116b800a71cc532b37422f9b56b4391b3cf81f9",
+      "branch": "main",
+      "dirty": true,
+      "status_entry_count": 1
+    }
+  },
+  "tool_versions": {
+    "git": "git version 2.52.0",
+    "go": "go version go1.25.4 darwin/arm64",
+    "python3": "Python 3.14.5",
+    "node": "v25.2.1",
+    "npm": "11.6.2",
+    "npx": "11.6.2",
+    "claude": "2.1.165 (Claude Code)",
+    "codex": "codex-cli 0.134.0",
+    "uvx": "uv-tool-uvx 0.5.13 (c456bae5e 2024-12-27)",
+    "rtk": "rtk 0.41.0",
+    "grepai": "available"
+  },
+  "file_hashes": {
+    "task_prompt_file": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5",
+    "optimized_guidance_file": "d36e664e923df7916ac78753a5d8f9e9178de76595c967797a2e9474a44f1431",
+    "optimized_mcp_config_file": "902fd11d303d7c4b5bf8e6cd1fee743aff06a36772dda736c7621e1b0775ada6"
+  },
+  "environment": {
+    "BENCHMARK_SUITE_FILE": "<repo>/docs/benchmarks/fixtures/tool-suite.json",
+    "BENCHMARK_SUITE_SHA256": "d52a79404542508e2ecc2b118277bad22e46df86d95069bede5e8f4f9dbd599b",
+    "BENCHMARK_TARGET_COMMIT": "1116b800a71cc532b37422f9b56b4391b3cf81f9",
+    "BENCHMARK_TARGET_PREPARE_COMMAND": "\"$ANALYZER_REPO/scripts/prepare-owner-breakdown-benchmark-target.sh\"",
+    "BENCHMARK_TASK_PROMPT_SHA256": "abef759344047294d3b4a1b279a7a5fb72731764406c3d879efbfc6100d8ddc5",
+    "BENCHMARK_GUIDANCE_SHA256": "d36e664e923df7916ac78753a5d8f9e9178de76595c967797a2e9474a44f1431",
+    "BENCHMARK_MCP_CONFIG_SHA256": "902fd11d303d7c4b5bf8e6cd1fee743aff06a36772dda736c7621e1b0775ada6",
+    "SOURCE_REPO": "<tmp>/agent-analyzer-owner-breakdown-target-v1",
+    "BASE_REF": "benchmark/owner-breakdown-v1-base",
+    "QUALITY_COMMAND": "go test ./...",
+    "OPTIMIZED_GUIDANCE_FILE": "<repo>/docs/benchmarks/fixtures/guidance/gathon-claude-guidance.txt",
+    "OPTIMIZED_SETUP_COMMAND": "\"$ANALYZER_REPO/scripts/setup-gathon-benchmark.sh\"",
+    "OPTIMIZED_MCP_CONFIG_FILE": "<repo>/docs/benchmarks/fixtures/mcp/gathon-local.json",
+    "AGENT_PLUGIN_ENABLED": "0",
+    "TOOLING_REVIEW_ENABLED": "0"
+  },
+  "completed_at_utc": "2026-06-05T09:39:22.156188Z",
+  "completed_repeats": 3,
+  "failed_repeats": []
+}

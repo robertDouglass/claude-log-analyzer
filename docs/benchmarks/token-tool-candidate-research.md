@@ -15,6 +15,7 @@ This note records the additional tools and approaches added after the first benc
 | CodeGraph | Local CodeGraph MCP server with pre-indexed symbol/call graph queries | Input/context through code-aware retrieval | Research-only diagnostic. Source/package reviewed and 3x benchmarked, but this fixture showed higher token/cost use. |
 | Headroom MCP | Local MCP compression/retrieval tools; benchmark used explicit MCP compression only | Tool-output/input-context | Research-only diagnostic. Source/package reviewed and 3x benchmarked, but this fixture showed mixed, very small savings with one repeat regressing. |
 | Headroom proxy | Local Anthropic-compatible proxy via `ANTHROPIC_BASE_URL` | Input/context through proxy compression/cache alignment | Research-only diagnostic. Source/package reviewed and 3x proxy benchmarked; it lowered analyzer-estimated tokens but increased full-session cost. |
+| Gathon | Local Gathon MCP server with pre-indexed knowledge graph retrieval | Input/context through code-aware retrieval | Research-only diagnostic. Source reviewed and 3x benchmarked, but this fixture showed higher token/cost use. |
 
 ## Smoke Results
 
@@ -26,6 +27,7 @@ Smoke tests remain useful only as mechanism checks:
 - RTK compressed the same noisy failing Go test output from 7,088 bytes to 963 bytes.
 - CodeGraph package smoke review verified `@colbymchenry/codegraph@0.9.9`, MIT license, pinned npx launch, local `.codegraph/` index setup, MCP command shape `codegraph serve --mcp`, and uninstall/uninit boundaries.
 - Headroom package smoke review verified `headroom-ai[proxy,code]==0.23.0`, Apache-2.0 license, Python 3.10-3.13 install requirement, explicit `headroom mcp serve` and `headroom proxy` launches, telemetry opt-out with `HEADROOM_TELEMETRY=off`, and no global `headroom mcp install` or `headroom wrap` use in the benchmark.
+- Gathon source review verified `pauldx/gathon` commit `0578b83f66ba35ca3d8cc800ff8faf21eaf2ad3c`, MIT license, explicit `gathon build` plus `gathon serve` MCP launch, and no `gathon install`, `gathon ctp-init`, `gathon ctp-hook`, or `.claude/settings.json` writes in the benchmark. Reproducible setup pins `tree-sitter-language-pack==0.9.1` because the latest package API failed Gathon's Go parser.
 
 Smoke success did not automatically predict task-level savings. The repeated task benchmark below is the product evidence.
 
@@ -42,6 +44,7 @@ All rows passed `go test ./...` in all three repeats.
 | CodeGraph | 3/3 | `+6,094` | `+4,046` | Claude output `+450` | native `+$0.081250`; API estimate `+$0.095826` | Research-only; quality passed, but cost/tokens got worse. |
 | Headroom MCP | 3/3 | `-138` | `-266` | Claude output `-29` | native `-$0.003130`; API estimate `-$0.002205` | Research-only; quality passed, but effect was too small/noisy and one repeat regressed. |
 | Headroom proxy | 3/3 | `-1,109` | `-759` | Claude output `-233` | native `+$0.064141`; API estimate `+$0.084046` | Not recommended; proxy reduced estimated/tool-output tokens but increased API-rate cost by `49.7%`. |
+| Gathon | 3/3 | `+9,471` | `+5,042` | Claude output `+2,072` | native `+$0.124928`; API estimate `+$0.136216` | Not recommended; quality passed, but API-rate cost increased by `80.8%`. |
 
 ## Product Actions
 
@@ -52,6 +55,7 @@ All rows passed `go test ./...` in all three repeats.
 - Keep smoke-test claims separate from task benchmark claims.
 - Keep CodeGraph research-only. The `codegraph-claude` suite passed quality 3/3 but increased cost and token use, so there is no promotion change.
 - Keep Headroom research-only/not recommended. The `headroom-claude` MCP suite passed quality 3/3, but the result was mixed (`+1,432`, `-896`, `-950` estimated-token deltas) and only `1.3%` mean API-rate savings. The more relevant `headroom-proxy-claude` suite also passed quality 3/3 and reduced analyzer-estimated/tool-output tokens, but increased API-rate cost by `49.7%`, so it is not a proven token-saving recommendation.
+- Keep Gathon research-only/not recommended. The `gathon-claude` suite passed quality 3/3, but increased estimated tokens by `+9,471`, tool-output tokens by `+5,042`, and API-rate cost by `80.8%`, so it is not a proven token-saving recommendation.
 
 ## Artifacts
 
@@ -62,3 +66,4 @@ All rows passed `go test ./...` in all three repeats.
 - CodeGraph diagnostic artifact: `web/proof/reports/aggregate-codegraph-claude.json`
 - Headroom diagnostic artifact: `web/proof/reports/aggregate-headroom-claude.json`
 - Headroom proxy diagnostic artifact: `web/proof/reports/aggregate-headroom-proxy-claude.json`
+- Gathon diagnostic artifact: `web/proof/reports/aggregate-gathon-claude.json`

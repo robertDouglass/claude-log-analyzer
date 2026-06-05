@@ -117,7 +117,7 @@ recommendations leave them empty.
 Adding, removing, or modifying any registry entry must bump
 `RegistryVersion()` — a CI test compares the live value to a checked-in
 golden constant and fails fast otherwise. The current benchmark-narrowed
-registry is `"phase-a-2026-06-05-headroom-proxy-negative-benchmark"`; see NFR-005.
+registry is `"phase-a-2026-06-05-gathon-negative-benchmark"`; see NFR-005.
 
 For URL verification, see `research.md` §"Per-tool research notes". The
 short version: Phase A does **not** invent or guess source URLs. Every

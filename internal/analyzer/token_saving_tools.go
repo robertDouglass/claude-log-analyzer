@@ -31,7 +31,7 @@ type ToolID string
 // in any observable way (added/removed tool, field edit, ordering
 // change). NFR-005 in spec.md gates this; a CI test compares the live
 // value to a checked-in golden constant.
-const registryVersion = "phase-a-2026-06-05-headroom-proxy-negative-benchmark"
+const registryVersion = "phase-a-2026-06-05-gathon-negative-benchmark"
 
 // TokenSavingTool is one immutable registry entry. The struct shape is
 // frozen by contracts/token_saving_engine_go_api.md.
@@ -352,6 +352,22 @@ var registry = []TokenSavingTool{
 		ResearchOnly:        true,
 		InstallPolicy:       "research_only",
 		Notes:               "Brief allowlist; canonical source URL unverified — Phase B verification gap.",
+	},
+	{
+		ID:                  "gathon",
+		DisplayName:         "Gathon",
+		SourceURL:           "https://github.com/pauldx/gathon",
+		Category:            "retrieval",
+		RecommendationClass: "retrieval",
+		ClassRank:           7,
+		DetectorSources:     []EvidenceSource{"mcp_configured"},
+		InstallRisk:         "medium",
+		DataMovementRisk:    "low",
+		FreeReportAllowed:   false,
+		PaidPackAllowed:     false,
+		ResearchOnly:        true,
+		InstallPolicy:       "research_only",
+		Notes:               "Source reviewed at pauldx/gathon commit 0578b83; setup required a tree-sitter-language-pack compatibility pin, and the 3x diagnostic increased full-session tokens and cost.",
 	},
 	{
 		ID:                  "semble",

@@ -783,11 +783,11 @@ func remediationConflicts(id analyzer.ToolID) []string {
 	case "context_mode":
 		return []string{"token_optimizer_mcp", "headroom"}
 	case "claude_context":
-		return []string{"grepai", "serena", "codegraph", "semble"}
+		return []string{"grepai", "serena", "codegraph", "gathon", "semble"}
 	case "grepai":
-		return []string{"claude_context", "serena", "codegraph", "semble"}
+		return []string{"claude_context", "serena", "codegraph", "gathon", "semble"}
 	case "semble":
-		return []string{"claude_context", "grepai", "serena", "codegraph"}
+		return []string{"claude_context", "grepai", "serena", "codegraph", "gathon"}
 	case "claude_token_efficient":
 		return []string{"caveman"}
 	default:

@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "gathon": {
+      "command": "$ANALYZER_REPO/.data/benchmarks/external-tools/gathon-venv/bin/gathon",
+      "args": [
+        "serve",
+        "__BENCHMARK_RUN_DIR__/worktree-optimized",
+        "--compress",
+        "ultra"
+      ],
+      "env": {
+        "GATHON_COMPRESS": "ultra"
+      }
+    }
+  }
+}

@@ -125,6 +125,24 @@
       ]
     },
     {
+      "id": "gathon-claude",
+      "tool": "Gathon",
+      "harness": "claude",
+      "guidance_file": "docs/benchmarks/fixtures/guidance/gathon-claude-guidance.txt",
+      "mcp_config_file": "docs/benchmarks/fixtures/mcp/gathon-local.json",
+      "promotion_policy": "candidate_until_reviewed",
+      "candidate_source_url": "https://github.com/pauldx/gathon",
+      "candidate_issue": "https://github.com/Priivacy-ai/agent-log-analyzer/issues/175",
+      "env": {
+        "AGENT_PLUGIN_ENABLED": "0",
+        "TOOLING_REVIEW_ENABLED": "0",
+        "OPTIMIZED_SETUP_COMMAND": "\"$ANALYZER_REPO/scripts/setup-gathon-benchmark.sh\""
+      },
+      "requires": [
+        "bash"
+      ]
+    },
+    {
       "id": "claude-token-efficient",
       "tool": "claude-token-efficient",
       "harness": "claude",
